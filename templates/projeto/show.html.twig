@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Projeto{% endblock %}
+
+{% block body %}
+    <h1>Projeto</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ projeto.id }}</td>
+            </tr>
+            <tr>
+                <th>Titulo</th>
+                <td>{{ projeto.titulo }}</td>
+            </tr>
+            <tr>
+                <th>CodigoInterno</th>
+                <td>{{ projeto.codigoInterno }}</td>
+            </tr>
+            <tr>
+                <th>DescricaoResumida</th>
+                <td>{{ projeto.descricaoResumida }}</td>
+            </tr>
+            <tr>
+                <th>DescricaoDetalhada</th>
+                <td>{{ projeto.descricaoDetalhada }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ projeto.status }}</td>
+            </tr>
+            <tr>
+                <th>DataInicioPrevista</th>
+                <td>{{ projeto.dataInicioPrevista ? projeto.dataInicioPrevista|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DataFimPrevista</th>
+                <td>{{ projeto.dataFimPrevista ? projeto.dataFimPrevista|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DataInicioReal</th>
+                <td>{{ projeto.dataInicioReal ? projeto.dataInicioReal|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DataFimReal</th>
+                <td>{{ projeto.dataFimReal ? projeto.dataFimReal|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Tags</th>
+                <td>{{ projeto.tags }}</td>
+            </tr>
+            <tr>
+                <th>Observacoes</th>
+                <td>{{ projeto.observacoes }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_projeto_index') }}">back to list</a>
+
+    <a href="{{ path('app_projeto_edit', {'id': projeto.id}) }}">edit</a>
+
+    {{ include('projeto/_delete_form.html.twig') }}
+{% endblock %}

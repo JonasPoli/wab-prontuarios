@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Projeto index{% endblock %}
+
+{% block body %}
+    <h1>Projeto index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titulo</th>
+                <th>CodigoInterno</th>
+                <th>DescricaoResumida</th>
+                <th>DescricaoDetalhada</th>
+                <th>Status</th>
+                <th>DataInicioPrevista</th>
+                <th>DataFimPrevista</th>
+                <th>DataInicioReal</th>
+                <th>DataFimReal</th>
+                <th>Tags</th>
+                <th>Observacoes</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for projeto in projetos %}
+            <tr>
+                <td>{{ projeto.id }}</td>
+                <td>{{ projeto.titulo }}</td>
+                <td>{{ projeto.codigoInterno }}</td>
+                <td>{{ projeto.descricaoResumida }}</td>
+                <td>{{ projeto.descricaoDetalhada }}</td>
+                <td>{{ projeto.status }}</td>
+                <td>{{ projeto.dataInicioPrevista ? projeto.dataInicioPrevista|date('Y-m-d') : '' }}</td>
+                <td>{{ projeto.dataFimPrevista ? projeto.dataFimPrevista|date('Y-m-d') : '' }}</td>
+                <td>{{ projeto.dataInicioReal ? projeto.dataInicioReal|date('Y-m-d') : '' }}</td>
+                <td>{{ projeto.dataFimReal ? projeto.dataFimReal|date('Y-m-d') : '' }}</td>
+                <td>{{ projeto.tags }}</td>
+                <td>{{ projeto.observacoes }}</td>
+                <td>
+                    <a href="{{ path('app_projeto_show', {'id': projeto.id}) }}">show</a>
+                    <a href="{{ path('app_projeto_edit', {'id': projeto.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="13">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_projeto_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cliente index{% endblock %}
+
+{% block body %}
+    <h1>Cliente index</h1>
+
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for cliente in clientes %}
+        <tr>
+            <td>{{ cliente.nome }}</td>
+
+            <td>
+                {% if cliente.tipo == 'pessoa_fisica' %}
+                    Pessoa Física
+                {% else %}
+                    Pessoa Jurídica
+                {% endif %}
+            </td>
+
+            <td>
+                {% if cliente.status %}
+                    <span>Ativo</span>
+                {% else %}
+                    <span>Inativo</span>
+                {% endif %}
+            </td>
+
+            <td>
+                <a href="{{ path('app_cliente_show', {'id': cliente.id}) }}">
+                    Ver
+                </a>
+                |
+                <a href="{{ path('app_cliente_edit', {'id': cliente.id}) }}">
+                    Editar
+                </a>
+                |
+                {% if cliente.status %}
+                    <form method="post"
+      action="{{ path('app_cliente_inativar', {'id': cliente.id}) }}"
+      style="display:inline;">
+    <button type="submit">
+        Inativar
+    </button>
+</form>
+
+                {% endif %}
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="4">Nenhum cliente cadastrado</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+    <a href="{{ path('app_cliente_new') }}">Create new</a>
+{% endblock %}
