@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Registros históricos{% endblock %}
+
+{% block body %}
+    <h1>Registros históricos</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Título</th>
+                <th>Tipo</th>
+                <th>Visível</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in registros %}
+                <tr>
+                    <td>{{ registro.dataRegistro|date('d/m/Y H:i') }}</td>
+                    <td>{{ registro.titulo }}</td>
+                    <td>{{ registro.tipoRegistro }}</td>
+                    <td>{{ registro.visivelParaCliente ? 'Sim' : 'Não' }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Nenhum registro encontrado</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

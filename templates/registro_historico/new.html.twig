@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Novo registro histórico{% endblock %}
+
+{% block body %}
+    <h1>Novo registro histórico</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button>Salvar</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_projeto_show', { id: projeto.id }) }}">
+        Voltar ao projeto
+    </a>
+{% endblock %}

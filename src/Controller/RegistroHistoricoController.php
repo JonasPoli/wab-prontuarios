@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Projeto;
 use App\Entity\RegistroHistorico;
 use App\Form\RegistroHistoricoType;
 use App\Repository\RegistroHistoricoRepository;
@@ -9,12 +10,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/registro-historico')]
+#[Route('/registro-historico', name: 'app_registro_historico_')]
 class RegistroHistoricoController extends AbstractController
 {
-    #[Route('/', name: 'app_registro_historico_index', methods: ['GET'])]
+    #[Route('/', name: 'index', methods: ['GET'])]
     public function index(RegistroHistoricoRepository $registroHistoricoRepository): Response
     {
         return $this->render('registro_historico/index.html.twig', [
@@ -22,60 +23,36 @@ class RegistroHistoricoController extends AbstractController
         ]);
     }
 
-    #[Route('/novo', name: 'app_registro_historico_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $registro = new RegistroHistorico();
-        $form = $this->createForm(RegistroHistoricoType::class, $registro);
+    #[Route('/new/{id}', name: 'new', methods: ['GET', 'POST'])]
+    public function new(
+        Projeto $projeto,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $registroHistorico = new RegistroHistorico();
+        $registroHistorico->setProjeto($projeto);
+
+        if ($this->getUser()) {
+            $registroHistorico->setUsuarioAutor($this->getUser());
+        }
+
+        $form = $this->createForm(RegistroHistoricoType::class, $registroHistorico);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($registro);
+            $entityManager->persist($registroHistorico);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_registro_historico_index');
+            return $this->redirectToRoute(
+                'app_projeto_show',
+                ['id' => $projeto->getId()],
+                Response::HTTP_SEE_OTHER
+            );
         }
 
         return $this->render('registro_historico/new.html.twig', [
-            'registro' => $registro,
             'form' => $form,
+            'projeto' => $projeto,
         ]);
-    }
-
-    #[Route('/{id}', name: 'app_registro_historico_show', methods: ['GET'])]
-    public function show(RegistroHistorico $registro): Response
-    {
-        return $this->render('registro_historico/show.html.twig', [
-            'registro' => $registro,
-        ]);
-    }
-
-    #[Route('/{id}/editar', name: 'app_registro_historico_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, RegistroHistorico $registro, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(RegistroHistoricoType::class, $registro);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_registro_historico_index');
-        }
-
-        return $this->render('registro_historico/edit.html.twig', [
-            'registro' => $registro,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_registro_historico_delete', methods: ['POST'])]
-    public function delete(Request $request, RegistroHistorico $registro, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$registro->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($registro);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_registro_historico_index');
     }
 }

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Registro Histórico{% endblock %}
+
+{% block body %}
+<h1>{{ registro.titulo }}</h1>
+
+<p><strong>Data:</strong> {{ registro.dataRegistro|date('d/m/Y H:i') }}</p>
+<p><strong>Tipo:</strong> {{ registro.tipoRegistro }}</p>
+<p><strong>Descrição:</strong></p>
+<p>{{ registro.descricao }}</p>
+
+<a href="{{ path('app_registro_edit', { id: registro.id }) }}">Editar</a>
+
+<form method="post" action="{{ path('app_registro_delete', { id: registro.id }) }}">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ registro.id) }}">
+    <button>Excluir</button>
+</form>
+
+<a href="{{ path('app_registro_index', { id: registro.projeto.id }) }}">Voltar</a>
+{% endblock %}

@@ -12,9 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/projeto')]
-final class ProjetoController extends AbstractController
+class ProjetoController extends AbstractController
 {
-    #[Route(name: 'app_projeto_index', methods: ['GET'])]
+    #[Route('/', name: 'app_projeto_index', methods: ['GET'])]
     public function index(ProjetoRepository $projetoRepository): Response
     {
         return $this->render('projeto/index.html.twig', [
@@ -22,7 +22,7 @@ final class ProjetoController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_projeto_new', methods: ['GET', 'POST'])]
+    #[Route('/novo', name: 'app_projeto_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $projeto = new Projeto();
@@ -33,7 +33,7 @@ final class ProjetoController extends AbstractController
             $entityManager->persist($projeto);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_projeto_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_projeto_index');
         }
 
         return $this->render('projeto/new.html.twig', [
@@ -50,7 +50,7 @@ final class ProjetoController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_projeto_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/editar', name: 'app_projeto_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Projeto $projeto, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ProjetoType::class, $projeto);
@@ -59,7 +59,9 @@ final class ProjetoController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_projeto_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_projeto_show', [
+                'id' => $projeto->getId(),
+            ]);
         }
 
         return $this->render('projeto/edit.html.twig', [
@@ -68,14 +70,25 @@ final class ProjetoController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_projeto_delete', methods: ['POST'])]
-    public function delete(Request $request, Projeto $projeto, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$projeto->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($projeto);
+    /**
+     * ✅ CANCELAR PROJETO (MUDA STATUS)
+     */
+    #[Route('/{id}/cancelar', name: 'app_projeto_cancel', methods: ['POST'])]
+    public function cancelar(
+        Request $request,
+        Projeto $projeto,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if ($this->isCsrfTokenValid(
+            'cancelar' . $projeto->getId(),
+            $request->request->get('_token')
+        )) {
+            $projeto->setStatus('cancelado');
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_projeto_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_projeto_show', [
+            'id' => $projeto->getId(),
+        ]);
     }
 }

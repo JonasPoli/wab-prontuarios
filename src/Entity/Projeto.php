@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProjetoRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -68,9 +70,20 @@ class Projeto
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    /**
+     * @var Collection<int, RegistroHistorico>
+     */
+    #[ORM\OneToMany(
+        mappedBy: 'projeto',
+        targetEntity: RegistroHistorico::class,
+        orphanRemoval: true
+    )]
+    private Collection $registrosHistorico;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->registrosHistorico = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -234,6 +247,35 @@ class Projeto
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RegistroHistorico>
+     */
+    public function getRegistrosHistorico(): Collection
+    {
+        return $this->registrosHistorico;
+    }
+
+    public function addRegistroHistorico(RegistroHistorico $registroHistorico): static
+    {
+        if (!$this->registrosHistorico->contains($registroHistorico)) {
+            $this->registrosHistorico->add($registroHistorico);
+            $registroHistorico->setProjeto($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRegistroHistorico(RegistroHistorico $registroHistorico): static
+    {
+        if ($this->registrosHistorico->removeElement($registroHistorico)) {
+            if ($registroHistorico->getProjeto() === $this) {
+                $registroHistorico->setProjeto(null);
+            }
+        }
+
         return $this;
     }
 }

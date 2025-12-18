@@ -5,62 +5,53 @@
 {% block body %}
     <h1>Projeto</h1>
 
-    <table class="table">
+    <table>
         <tbody>
             <tr>
-                <th>Id</th>
+                <th>ID</th>
                 <td>{{ projeto.id }}</td>
             </tr>
             <tr>
-                <th>Titulo</th>
+                <th>Título</th>
                 <td>{{ projeto.titulo }}</td>
-            </tr>
-            <tr>
-                <th>CodigoInterno</th>
-                <td>{{ projeto.codigoInterno }}</td>
-            </tr>
-            <tr>
-                <th>DescricaoResumida</th>
-                <td>{{ projeto.descricaoResumida }}</td>
-            </tr>
-            <tr>
-                <th>DescricaoDetalhada</th>
-                <td>{{ projeto.descricaoDetalhada }}</td>
             </tr>
             <tr>
                 <th>Status</th>
                 <td>{{ projeto.status }}</td>
             </tr>
             <tr>
-                <th>DataInicioPrevista</th>
-                <td>{{ projeto.dataInicioPrevista ? projeto.dataInicioPrevista|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>DataFimPrevista</th>
-                <td>{{ projeto.dataFimPrevista ? projeto.dataFimPrevista|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>DataInicioReal</th>
-                <td>{{ projeto.dataInicioReal ? projeto.dataInicioReal|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>DataFimReal</th>
-                <td>{{ projeto.dataFimReal ? projeto.dataFimReal|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Tags</th>
-                <td>{{ projeto.tags }}</td>
-            </tr>
-            <tr>
-                <th>Observacoes</th>
-                <td>{{ projeto.observacoes }}</td>
+                <th>Descrição</th>
+                <td>{{ projeto.descricaoDetalhada }}</td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('app_projeto_index') }}">back to list</a>
+    <a href="{{ path('app_projeto_edit', { id: projeto.id }) }}">Editar projeto</a>
 
-    <a href="{{ path('app_projeto_edit', {'id': projeto.id}) }}">edit</a>
+    
 
-    {{ include('projeto/_delete_form.html.twig') }}
+    <h2>Registros históricos</h2>
+
+    <a href="{{ path('app_registro_historico_new', { id: projeto.id }) }}">
+        Novo registro histórico
+    </a>
+
+    
+
+    <ul>
+        {% for registro in projeto.registrosHistorico %}
+            <li>
+                <strong>{{ registro.dataRegistro|date('d/m/Y H:i') }}</strong> –
+                {{ registro.titulo }}
+
+                {% if registro.visivelParaCliente %}
+                    (Visível para cliente)
+                {% endif %}
+            </li>
+        {% else %}
+            <li>Nenhum registro histórico cadastrado.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ path('app_projeto_index') }}">Voltar para a lista</a>
 {% endblock %}

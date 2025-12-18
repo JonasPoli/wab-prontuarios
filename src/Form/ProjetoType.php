@@ -4,7 +4,6 @@ namespace App\Form;
 
 use App\Entity\Projeto;
 use App\Entity\Cliente;
-use App\Entity\Usuario;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -23,12 +22,17 @@ class ProjetoType extends AbstractType
                 'class' => Cliente::class,
                 'choice_label' => 'nome',
                 'label' => 'Cliente',
+                'placeholder' => 'Selecione um cliente',
             ])
-            ->add('nome', TextType::class, [
-                'label' => 'Nome do projeto',
+            ->add('titulo', TextType::class, [
+                'label' => 'Título do projeto',
             ])
-            ->add('descricao', TextareaType::class, [
-                'label' => 'Descrição',
+            ->add('descricaoResumida', TextareaType::class, [
+                'label' => 'Descrição resumida',
+                'required' => false,
+            ])
+            ->add('descricaoDetalhada', TextareaType::class, [
+                'label' => 'Descrição detalhada',
                 'required' => false,
             ])
             ->add('status', ChoiceType::class, [

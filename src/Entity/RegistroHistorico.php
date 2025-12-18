@@ -40,10 +40,14 @@ class RegistroHistorico
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $tags = null;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $usuarioAutor = null;
+
+    #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
     public function __construct()
@@ -131,6 +135,17 @@ class RegistroHistorico
     public function setTags(?string $tags): static
     {
         $this->tags = $tags;
+        return $this;
+    }
+
+    public function getUsuarioAutor(): ?User
+    {
+        return $this->usuarioAutor;
+    }
+
+    public function setUsuarioAutor(?User $usuarioAutor): static
+    {
+        $this->usuarioAutor = $usuarioAutor;
         return $this;
     }
 
