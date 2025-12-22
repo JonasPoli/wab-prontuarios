@@ -1,55 +1,93 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Projeto index{% endblock %}
+{% block title %}Projetos{% endblock %}
 
 {% block body %}
-    <h1>Projeto index</h1>
+<div class="container-fluid py-4">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Titulo</th>
-                <th>CodigoInterno</th>
-                <th>DescricaoResumida</th>
-                <th>DescricaoDetalhada</th>
-                <th>Status</th>
-                <th>DataInicioPrevista</th>
-                <th>DataFimPrevista</th>
-                <th>DataInicioReal</th>
-                <th>DataFimReal</th>
-                <th>Tags</th>
-                <th>Observacoes</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for projeto in projetos %}
-            <tr>
-                <td>{{ projeto.id }}</td>
-                <td>{{ projeto.titulo }}</td>
-                <td>{{ projeto.codigoInterno }}</td>
-                <td>{{ projeto.descricaoResumida }}</td>
-                <td>{{ projeto.descricaoDetalhada }}</td>
-                <td>{{ projeto.status }}</td>
-                <td>{{ projeto.dataInicioPrevista ? projeto.dataInicioPrevista|date('Y-m-d') : '' }}</td>
-                <td>{{ projeto.dataFimPrevista ? projeto.dataFimPrevista|date('Y-m-d') : '' }}</td>
-                <td>{{ projeto.dataInicioReal ? projeto.dataInicioReal|date('Y-m-d') : '' }}</td>
-                <td>{{ projeto.dataFimReal ? projeto.dataFimReal|date('Y-m-d') : '' }}</td>
-                <td>{{ projeto.tags }}</td>
-                <td>{{ projeto.observacoes }}</td>
-                <td>
-                    <a href="{{ path('app_projeto_show', {'id': projeto.id}) }}">show</a>
-                    <a href="{{ path('app_projeto_edit', {'id': projeto.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="13">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Projetos</h1>
 
-    <a href="{{ path('app_projeto_new') }}">Create new</a>
+        <a href="{{ path('app_projeto_new') }}" class="btn btn-primary">
+            + Novo projeto
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Título</th>
+                        <th>Cliente</th>
+                        <th>Status</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for projeto in projetos %}
+                    <tr>
+                        <td>
+                            <strong>{{ projeto.titulo }}</strong>
+                        </td>
+
+                        <td>
+                            {{ projeto.cliente.nome }}
+                        </td>
+
+                        <td>
+                            {% if projeto.status == 'planejado' %}
+                                <span class="badge bg-secondary">Planejado</span>
+                            {% elseif projeto.status == 'em_andamento' %}
+                                <span class="badge bg-primary">Em andamento</span>
+                            {% elseif projeto.status == 'concluido' %}
+                                <span class="badge bg-success">Concluído</span>
+                            {% elseif projeto.status == 'cancelado' %}
+                                <span class="badge bg-danger">Cancelado</span>
+                            {% else %}
+                                <span class="badge bg-secondary">—</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end">
+                            <a href="{{ path('app_projeto_show', {'id': projeto.id}) }}"
+                               class="btn btn-sm btn-outline-primary">
+                                Ver
+                            </a>
+
+                            
+                                <a href="{{ path('app_projeto_edit', {'id': projeto.id}) }}"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    Editar
+                                </a>
+
+                                {% if projeto.status != 'cancelado' %}
+                                <form method="post"
+                                      action="{{ path('app_projeto_cancelar', {'id': projeto.id}) }}"
+                                      class="d-inline"
+                                      onsubmit="return confirm('Tem certeza que deseja cancelar este projeto?');">
+                                    <input type="hidden" name="_method" value="PATCH">
+                                    <input type="hidden" name="status" value="cancelado">
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        Cancelar
+                                    </button>
+                                </form>
+
+                            
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            Nenhum projeto cadastrado
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

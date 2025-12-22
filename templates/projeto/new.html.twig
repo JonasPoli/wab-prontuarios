@@ -1,11 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Projeto{% endblock %}
+{% block title %}Novo projeto{% endblock %}
 
 {% block body %}
-    <h1>Create new Projeto</h1>
+<h1>Novo projeto</h1>
 
-    {{ include('projeto/_form.html.twig') }}
-
-    <a href="{{ path('app_projeto_index') }}">back to list</a>
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn btn-primary mt-3">Salvar</button>
+{{ form_end(form) }}
 {% endblock %}

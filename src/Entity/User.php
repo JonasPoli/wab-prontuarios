@@ -16,6 +16,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255)]
+private ?string $nomeCompleto = null;
+
+public function getNomeCompleto(): ?string
+{
+    return $this->nomeCompleto;
+}
+
+public function setNomeCompleto(string $nomeCompleto): static
+{
+    $this->nomeCompleto = $nomeCompleto;
+    return $this;
+}
+
+
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 

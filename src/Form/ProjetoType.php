@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Projeto;
 use App\Entity\Cliente;
+use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -18,46 +19,76 @@ class ProjetoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('cliente', EntityType::class, [
-                'class' => Cliente::class,
-                'choice_label' => 'nome',
-                'label' => 'Cliente',
-                'placeholder' => 'Selecione um cliente',
-            ])
+           ->add('cliente', EntityType::class, [
+    'class' => Cliente::class,
+    'choice_label' => 'nome',
+    'placeholder' => 'Selecione o cliente',
+    'required' => true,
+])
+
+        
             ->add('titulo', TextType::class, [
-                'label' => 'Título do projeto',
+                'required' => true,
             ])
+
+            ->add('codigoInterno', TextType::class, [
+                'required' => false,
+                'label' => 'Código interno',
+            ])
+
             ->add('descricaoResumida', TextareaType::class, [
-                'label' => 'Descrição resumida',
                 'required' => false,
             ])
+
             ->add('descricaoDetalhada', TextareaType::class, [
-                'label' => 'Descrição detalhada',
                 'required' => false,
             ])
+
             ->add('status', ChoiceType::class, [
-                'label' => 'Status',
                 'choices' => [
                     'Planejado' => 'planejado',
                     'Em andamento' => 'em_andamento',
                     'Concluído' => 'concluido',
                     'Cancelado' => 'cancelado',
                 ],
+                'required' => true,
             ])
+
             ->add('dataInicioPrevista', DateType::class, [
-                'label' => 'Data início prevista',
                 'widget' => 'single_text',
                 'required' => false,
             ])
+
             ->add('dataFimPrevista', DateType::class, [
-                'label' => 'Data fim prevista',
                 'widget' => 'single_text',
                 'required' => false,
             ])
-            ->add('observacoes', TextareaType::class, [
-                'label' => 'Observações',
+
+            ->add('dataInicioReal', DateType::class, [
+                'widget' => 'single_text',
                 'required' => false,
-            ]);
+            ])
+
+            ->add('dataFimReal', DateType::class, [
+                'widget' => 'single_text',
+                'required' => false,
+            ])
+
+            ->add('responsavelInterno', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'nomeCompleto',
+                'placeholder' => 'Selecione o responsável',
+                'required' => false,
+            ])
+
+            ->add('tags', TextType::class, [
+                'required' => false,
+            ])
+
+            ->add('observacoes', TextareaType::class, [
+                'required' => false,
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

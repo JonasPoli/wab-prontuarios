@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+
     <title>{% block title %}Sistema{% endblock %}</title>
 
     {# Bootstrap 5 #}
@@ -18,9 +19,11 @@
     <aside class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary border-end"
            style="width: 280px;">
 
-        <a href="{{ path('app_projeto_index') }}"
+        <a href="{{ path('app_cliente_index') }}"
            class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <span class="fs-4 fw-bold">WAB Prontuários</span>
+            <span class="fs-4 fw-semibold">
+                Sistema
+            </span>
         </a>
 
         <hr>
@@ -28,15 +31,13 @@
         <ul class="nav nav-pills flex-column mb-auto">
 
             <li class="nav-item">
-                <a href="{{ path('app_projeto_index') }}"
-                   class="nav-link {% if app.request.attributes.get('_route') starts with 'app_projeto' %}active{% else %}link-body-emphasis{% endif %}">
-                    Projetos
-                </a>
-            </li>
-
-            <li>
                 <a href="{{ path('app_cliente_index') }}"
-                   class="nav-link {% if app.request.attributes.get('_route') starts with 'app_cliente' %}active{% else %}link-body-emphasis{% endif %}">
+                   class="nav-link
+                   {% if app.request.attributes.get('_route') starts with 'app_cliente' %}
+                       active
+                   {% else %}
+                       link-body-emphasis
+                   {% endif %}">
                     Clientes
                 </a>
             </li>
@@ -50,7 +51,9 @@
                class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle"
                data-bs-toggle="dropdown"
                aria-expanded="false">
-                <strong>{{ app.user ? app.user.email : 'Usuário' }}</strong>
+                <strong>
+                    {{ app.user ? app.user.email : 'Usuário' }}
+                </strong>
             </a>
 
             <ul class="dropdown-menu text-small shadow">
@@ -65,7 +68,7 @@
     </aside>
 
     {# ===== CONTEÚDO ===== #}
-    <main class="flex-fill p-4">
+    <main class="flex-fill p-4 bg-light">
         {% block body %}{% endblock %}
     </main>
 

@@ -1,58 +1,224 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Cliente{% endblock %}
+{% block title %}Cliente - {{ cliente.nome }}{% endblock %}
 
 {% block body %}
-    <h1>Cliente</h1>
+<div class="container-fluid py-4">
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ cliente.id }}</td>
-            </tr>
-            <tr>
-                <th>Tipo</th>
-                <td>{{ cliente.tipo }}</td>
-            </tr>
-            <tr>
-                <th>Nome</th>
-                <td>{{ cliente.nome }}</td>
-            </tr>
-            <tr>
-                <th>ApelidoFantasia</th>
-                <td>{{ cliente.apelidoFantasia }}</td>
-            </tr>
-            <tr>
-                <th>Documento</th>
-                <td>{{ cliente.documento }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ cliente.email }}</td>
-            </tr>
-            <tr>
-                <th>TelefonePrincipal</th>
-                <td>{{ cliente.telefonePrincipal }}</td>
-            </tr>
-            <tr>
-                <th>TelefoneSecundario</th>
-                <td>{{ cliente.telefoneSecundario }}</td>
-            </tr>
-            <tr>
-                <th>Observacoes</th>
-                <td>{{ cliente.observacoes }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ cliente.status ? 'Yes' : 'No' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    {# ================= CABEÇALHO ================= #}
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="h3 mb-0">{{ cliente.nome }}</h1>
+            <p class="text-muted mb-0">
+                Visualização dos dados do cliente
+            </p>
+        </div>
 
-    <a href="{{ path('app_cliente_index') }}">back to list</a>
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_cliente_edit', { id: cliente.id }) }}"
+               class="btn btn-primary">
+                Editar cliente
+            </a>
 
-    <a href="{{ path('app_cliente_edit', {'id': cliente.id}) }}">edit</a>
+            <a href="{{ path('app_cliente_index') }}"
+               class="btn btn-outline-secondary">
+                Voltar
+            </a>
+        </div>
+    </div>
 
-    {{ include('cliente/_delete_form.html.twig') }}
+    {# ================= DADOS DO CLIENTE ================= #}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <h5 class="mb-3">Dados principais</h5>
+
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Tipo</div>
+                <div class="col-md-9">
+                    {{ cliente.tipo == 'pessoa_fisica' ? 'Pessoa Física' : 'Pessoa Jurídica' }}
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Nome / Razão social</div>
+                <div class="col-md-9">{{ cliente.nome }}</div>
+            </div>
+
+            {% if cliente.apelidoFantasia %}
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Apelido / Nome fantasia</div>
+                <div class="col-md-9">{{ cliente.apelidoFantasia }}</div>
+            </div>
+            {% endif %}
+
+            {% if cliente.documento %}
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Documento</div>
+                <div class="col-md-9">{{ cliente.documento }}</div>
+            </div>
+            {% endif %}
+
+            <hr>
+
+            <h5 class="mb-3">Contato</h5>
+
+            {% if cliente.email %}
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">E-mail</div>
+                <div class="col-md-9">{{ cliente.email }}</div>
+            </div>
+            {% endif %}
+
+            {% if cliente.telefonePrincipal %}
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Telefone principal</div>
+                <div class="col-md-9">{{ cliente.telefonePrincipal }}</div>
+            </div>
+            {% endif %}
+
+            {% if cliente.telefoneSecundario %}
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Telefone secundário</div>
+                <div class="col-md-9">{{ cliente.telefoneSecundario }}</div>
+            </div>
+            {% endif %}
+
+            <hr>
+
+            <h5 class="mb-3">Observações</h5>
+            <div class="mb-2">
+                {{ cliente.observacoes ?: '—' }}
+            </div>
+
+            <hr>
+
+            <h5 class="mb-3">Status</h5>
+            {% if cliente.status %}
+                <span class="badge bg-success">Ativo</span>
+            {% else %}
+                <span class="badge bg-secondary">Inativo</span>
+            {% endif %}
+
+        </div>
+    </div>
+
+    {# ================= PROJETOS DO CLIENTE ================= #}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Projetos do cliente</h5>
+
+                <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+    <h3>Projetos do cliente</h3>
+
+    <a href="{{ path('app_cliente_projeto_new', { id: cliente.id }) }}"
+       class="btn btn-sm btn-success">
+        Novo projeto
+    </a>
+
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Status</th>
+            <th>Início previsto</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for projeto in cliente.projetos %}
+            <tr>
+                <td>{{ projeto.titulo }}</td>
+                <td>{{ projeto.status }}</td>
+                <td>
+                    {{ projeto.dataInicioPrevista
+                        ? projeto.dataInicioPrevista|date('d/m/Y')
+                        : '-' }}
+                </td>
+                <td>
+                    <a href="{{ path('app_projeto_show', { id: projeto.id }) }}"
+                       class="btn btn-sm btn-outline-primary">
+                        Ver
+                    </a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4" class="text-muted">
+                    Nenhum projeto cadastrado
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div>
+
+
+            </div>
+
+            {% if cliente.projetos|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Status</th>
+                                <th>Início previsto</th>
+                                <th>Fim previsto</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for projeto in cliente.projetos %}
+                            <tr>
+                                <td>{{ projeto.titulo }}</td>
+
+                                <td>
+                                    <span class="badge bg-light text-dark">
+                                        {{ projeto.status }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ projeto.dataInicioPrevista ? projeto.dataInicioPrevista|date('d/m/Y') : '—' }}
+                                </td>
+
+                                <td>
+                                    {{ projeto.dataFimPrevista ? projeto.dataFimPrevista|date('d/m/Y') : '—' }}
+                                </td>
+
+                                <td class="text-end">
+                                    <a href="{{ path('app_projeto_show', { id: projeto.id }) }}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Ver
+                                    </a>
+
+                                    <a href="{{ path('app_projeto_edit', { id: projeto.id }) }}"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        Editar
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">
+                    Este cliente ainda não possui projetos cadastrados.
+                </p>
+            {% endif %}
+
+        </div>
+    </div>
+
+    {# ================= AÇÕES ================= #}
+    <div class="d-flex justify-content-end gap-2, btn-sm btn-outline-danger">
+        {{ include('cliente/_delete_form.html.twig') }}
+    </div>
+
+</div>
 {% endblock %}

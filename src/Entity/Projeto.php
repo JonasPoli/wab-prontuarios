@@ -38,9 +38,10 @@ class Projeto
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $descricaoDetalhada = null;
 
+  
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(message: 'O status do projeto é obrigatório.')]
-    private ?string $status = null;
+    private string $status = 'planejado';
 
     #[ORM\Column(type: 'date', nullable: true)]
     private ?\DateTimeInterface $dataInicioPrevista = null;
@@ -84,6 +85,9 @@ class Projeto
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->registrosHistorico = new ArrayCollection();
+
+       
+        $this->status = 'planejado';
     }
 
     public function getId(): ?int
@@ -91,16 +95,18 @@ class Projeto
         return $this->id;
     }
 
-    public function getCliente(): ?Cliente
-    {
-        return $this->cliente;
-    }
+   public function getCliente(): ?Cliente
+{
+    return $this->cliente;
+}
 
-    public function setCliente(?Cliente $cliente): static
-    {
-        $this->cliente = $cliente;
-        return $this;
-    }
+
+    public function setCliente(?Cliente $cliente): self
+{
+    $this->cliente = $cliente;
+    return $this;
+}
+
 
     public function getTitulo(): ?string
     {
@@ -146,7 +152,7 @@ class Projeto
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): string
     {
         return $this->status;
     }

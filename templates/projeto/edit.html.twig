@@ -1,25 +1,160 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Projeto{% endblock %}
+{% block title %}Editar projeto{% endblock %}
 
 {% block body %}
-    <h1>Edit Projeto</h1>
+<div class="container-fluid py-4">
 
-    {{ include('projeto/_form.html.twig', {'button_label': 'Update'}) }}
+    <div class="mb-4">
+        <h1 class="h3 mb-0">Editar projeto</h1>
+        <p class="text-muted mb-0">
+            Atualize os dados do projeto
+        </p>
+    </div>
 
-    <a href="{{ path('app_projeto_index') }}">back to list</a>
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-    <form method="post"
-      action="{{ path('app_projeto_cancel', { id: projeto.id }) }}"
-      onsubmit="return confirm('Tem certeza que deseja cancelar este projeto?');"
-      style="display:inline-block"
->
-    <input type="hidden" name="_token" value="{{ csrf_token('cancelar' ~ projeto.id) }}">
+            {{ form_start(form) }}
 
-    <button class="btn btn-danger">
-        Cancelar projeto
-    </button>
-</form>
+            {# ===== DADOS PRINCIPAIS ===== #}
+            <h5 class="mb-3">Dados principais</h5>
+
+            <div class="row">
+
+             <div class="row">
+    <div class="col-md-6 mb-3">
+        {{ form_label(form.cliente) }}
+        {{ form_widget(form.cliente, { attr: { class: 'form-select' } }) }}
+        {{ form_errors(form.cliente) }}
+    </div>
+</div>
+
+                <div class="col-md-8 mb-3">
+                    {{ form_label(form.titulo) }}
+                    {{ form_widget(form.titulo, { attr: { class: 'form-control' } }) }}
+                    {{ form_errors(form.titulo) }}
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    {{ form_label(form.codigoInterno) }}
+                    {{ form_widget(form.codigoInterno, { attr: { class: 'form-control' } }) }}
+                    {{ form_errors(form.codigoInterno) }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.descricaoResumida) }}
+                {{ form_widget(form.descricaoResumida, { attr: { class: 'form-control' } }) }}
+                {{ form_errors(form.descricaoResumida) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.descricaoDetalhada) }}
+                {{ form_widget(form.descricaoDetalhada, { attr: { class: 'form-control' } }) }}
+                {{ form_errors(form.descricaoDetalhada) }}
+            </div>
+
+            <hr>
+
+            {# ===== CONTROLE DO PROJETO ===== #}
+            <h5 class="mb-3">Controle do projeto</h5>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    {{ form_label(form.status) }}
+                    {{ form_widget(form.status, { attr: { class: 'form-select' } }) }}
+                    {{ form_errors(form.status) }}
+                </div>
+
+                
+
+                <div class="col-md-4 mb-3">
+                    {{ form_label(form.responsavelInterno, 'Responsável interno') }}
+                    {{ form_widget(form.responsavelInterno, { attr: { class: 'form-select' } }) }}
+                    {{ form_errors(form.responsavelInterno) }}
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    {{ form_label(form.tags) }}
+                    {{ form_widget(form.tags, { attr: { class: 'form-control' } }) }}
+                    {{ form_errors(form.tags) }}
+                </div>
+            </div>
+
+            <hr>
+
+            {# ===== PLANEJAMENTO ===== #}
+            <h5 class="mb-3">Planejamento</h5>
+
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    {{ form_label(form.dataInicioPrevista) }}
+                    {{ form_widget(form.dataInicioPrevista, { attr: { class: 'form-control' } }) }}
+                    {{ form_errors(form.dataInicioPrevista) }}
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    {{ form_label(form.dataFimPrevista) }}
+                    {{ form_widget(form.dataFimPrevista, { attr: { class: 'form-control' } }) }}
+                    {{ form_errors(form.dataFimPrevista) }}
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    {{ form_label(form.dataInicioReal) }}
+                    {{ form_widget(form.dataInicioReal, { attr: { class: 'form-control' } }) }}
+                    {{ form_errors(form.dataInicioReal) }}
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    {{ form_label(form.dataFimReal) }}
+                    {{ form_widget(form.dataFimReal, { attr: { class: 'form-control' } }) }}
+                    {{ form_errors(form.dataFimReal) }}
+                </div>
+            </div>
+
+            <hr>
+
+            {# ===== OBSERVAÇÕES ===== #}
+            <h5 class="mb-3">Observações</h5>
+
+            <div class="mb-3">
+                {{ form_label(form.observacoes) }}
+                {{ form_widget(form.observacoes, {
+                    attr: { class: 'form-control', rows: 4 }
+                }) }}
+                {{ form_errors(form.observacoes) }}
+            </div>
+
+            {# ===== AÇÕES ===== #}
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ path('app_projeto_index') }}"
+                   class="btn btn-outline-secondary">
+                    Voltar
+                </a>
+
+                <div class="d-flex gap-2">
+                    {% if projeto.status != 'cancelado' %}
+                        <form method="post"
+                              action="{{ path('app_projeto_cancelar', {'id': projeto.id}) }}"
+                              onsubmit="return confirm('Tem certeza que deseja cancelar este projeto?');">
+                            <button class="btn btn-outline-danger">
+                                Cancelar projeto
+                            </button>
+                        </form>
+                    {% endif %}
+
+                    <button class="btn btn-primary">
+                        Salvar alterações
+                    </button>
+                </div>
+            </div>
+
+            {{ form_end(form, { render_rest: false }) }}
 
 
+        </div>
+    </div>
+
+</div>
 {% endblock %}

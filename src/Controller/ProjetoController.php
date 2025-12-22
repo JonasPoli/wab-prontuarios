@@ -23,21 +23,20 @@ class ProjetoController extends AbstractController
     }
 
     #[Route('/novo', name: 'app_projeto_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $em): Response
     {
         $projeto = new Projeto();
         $form = $this->createForm(ProjetoType::class, $projeto);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($projeto);
-            $entityManager->flush();
+            $em->persist($projeto);
+            $em->flush();
 
             return $this->redirectToRoute('app_projeto_index');
         }
 
         return $this->render('projeto/new.html.twig', [
-            'projeto' => $projeto,
             'form' => $form,
         ]);
     }
@@ -51,13 +50,17 @@ class ProjetoController extends AbstractController
     }
 
     #[Route('/{id}/editar', name: 'app_projeto_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Projeto $projeto, EntityManagerInterface $entityManager): Response
-    {
+    public function edit(
+        Request $request,
+        Projeto $projeto,
+        EntityManagerInterface $em
+    ): Response {
         $form = $this->createForm(ProjetoType::class, $projeto);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $projeto->setUpdatedAt(new \DateTimeImmutable());
+            $em->flush();
 
             return $this->redirectToRoute('app_projeto_show', [
                 'id' => $projeto->getId(),
@@ -65,30 +68,22 @@ class ProjetoController extends AbstractController
         }
 
         return $this->render('projeto/edit.html.twig', [
-            'projeto' => $projeto,
             'form' => $form,
+            'projeto' => $projeto,
         ]);
     }
 
-    /**
-     * ✅ CANCELAR PROJETO (MUDA STATUS)
-     */
-    #[Route('/{id}/cancelar', name: 'app_projeto_cancel', methods: ['POST'])]
+    
+    #[Route('/{id}/cancelar', name: 'app_projeto_cancelar', methods: ['POST'])]
     public function cancelar(
-        Request $request,
         Projeto $projeto,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $em
     ): Response {
-        if ($this->isCsrfTokenValid(
-            'cancelar' . $projeto->getId(),
-            $request->request->get('_token')
-        )) {
-            $projeto->setStatus('cancelado');
-            $entityManager->flush();
-        }
+        $projeto->setStatus('cancelado');
+        $projeto->setUpdatedAt(new \DateTimeImmutable());
 
-        return $this->redirectToRoute('app_projeto_show', [
-            'id' => $projeto->getId(),
-        ]);
+        $em->flush();
+
+        return $this->redirectToRoute('app_projeto_index');
     }
 }

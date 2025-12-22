@@ -11,21 +11,21 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ClienteRepository::class)]
 class Cliente
 {
-
-  
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: ['pessoa_fisica', 'pessoa_juridica'])]
+    #[Assert\NotBlank(message: 'O tipo do cliente é obrigatório.')]
+    #[Assert\Choice(
+        choices: ['pessoa_fisica', 'pessoa_juridica'],
+        message: 'Tipo inválido.'
+    )]
     private ?string $tipo = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: 'O nome é obrigatório.')]
     private ?string $nome = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -35,7 +35,7 @@ class Cliente
     private ?string $documento = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Email]
+    #[Assert\Email(message: 'E-mail inválido.')]
     private ?string $email = null;
 
     #[ORM\Column(length: 20, nullable: true)]
@@ -48,7 +48,7 @@ class Cliente
     private ?string $observacoes = null;
 
     #[ORM\Column]
-    private ?bool $status = true;
+    private bool $status = true;
 
     #[ORM\OneToMany(mappedBy: 'cliente', targetEntity: Projeto::class)]
     private Collection $projetos;
@@ -151,7 +151,12 @@ class Cliente
         return $this;
     }
 
-    public function isStatus(): ?bool
+    public function isStatus(): bool
+    {
+        return $this->status;
+    }
+
+    public function getStatus(): bool
     {
         return $this->status;
     }
