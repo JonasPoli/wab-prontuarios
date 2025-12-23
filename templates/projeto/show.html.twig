@@ -3,19 +3,125 @@
 {% block title %}Projeto{% endblock %}
 
 {% block body %}
-<h1>{{ projeto.titulo }}</h1>
+<div class="container-fluid py-4">
 
-<p>Status: <strong>{{ projeto.status }}</strong></p>
+    {# ===== TÍTULO ===== #}
+    <div class="mb-4">
+        <h1 class="h3 mb-0">{{ projeto.titulo }}</h1>
+        <p class="text-muted mb-0">
+            Cliente: <strong>{{ projeto.cliente.nome }}</strong>
+        </p>
+    </div>
 
-<a href="{{ path('app_projeto_edit', {id: projeto.id}) }}" class="btn btn-secondary">
-    Editar
-</a>
+    {# ===== DADOS DO PROJETO ===== #}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
 
-<form method="post"
-      action="{{ path('app_projeto_cancelar', {id: projeto.id}) }}"
-      style="display:inline;">
-    <button class="btn btn-danger">
-        Cancelar projeto
-    </button>
-</form>
+            <h5 class="mb-3">Dados do projeto</h5>
+
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Status:</strong>
+                    {{ projeto.status|capitalize }}
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Código interno:</strong>
+                    {{ projeto.codigoInterno ?? '-' }}
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Responsável:</strong>
+                    {{ projeto.responsavelInterno ? projeto.responsavelInterno.email : '-' }}
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <strong>Início previsto:</strong>
+                    {{ projeto.dataInicioPrevista ? projeto.dataInicioPrevista|date('d/m/Y') : '-' }}
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Fim previsto:</strong>
+                    {{ projeto.dataFimPrevista ? projeto.dataFimPrevista|date('d/m/Y') : '-' }}
+                </div>
+            </div>
+
+            {% if projeto.descricaoResumida %}
+                <hr>
+                <p class="mb-0">
+                    {{ projeto.descricaoResumida }}
+                </p>
+            {% endif %}
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ path('app_projeto_index') }}" class="btn btn-outline-secondary">
+                    Voltar
+                </a>
+
+                <a href="{{ path('app_projeto_edit', {'id': projeto.id}) }}"
+                   class="btn btn-primary">
+                    Editar projeto
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    {# ===== HISTÓRICO ===== #}
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h5 class="mb-3">Histórico do projeto</h5>
+
+            {% if projeto.registrosHistorico is empty %}
+                <p class="text-muted mb-0">
+                    Nenhum registro histórico cadastrado.
+                </p>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Data</th>
+                                <th>Tipo</th>
+                                <th>Título</th>
+                                <th>Descrição</th>
+                                <th>Autor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registro in projeto.registrosHistorico %}
+                                <tr>
+                                    <td>
+                                        {{ registro.dataRegistro|date('d/m/Y') }}
+                                    </td>
+
+                                    <td>
+                                        {{ registro.tipoRegistro ?? '-' }}
+                                    </td>
+
+                                    <td>
+                                        {{ registro.titulo ?? '-' }}
+                                    </td>
+
+                                    <td>
+                                        {{ registro.descricao }}
+                                    </td>
+
+                                    <td>
+                                        {{ registro.usuarioAutor ? registro.usuarioAutor.email : '-' }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
 {% endblock %}

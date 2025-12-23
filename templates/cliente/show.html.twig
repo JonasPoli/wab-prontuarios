@@ -46,17 +46,17 @@
             </div>
 
             {% if cliente.apelidoFantasia %}
-            <div class="row mb-2">
-                <div class="col-md-3 fw-bold">Apelido / Nome fantasia</div>
-                <div class="col-md-9">{{ cliente.apelidoFantasia }}</div>
-            </div>
+                <div class="row mb-2">
+                    <div class="col-md-3 fw-bold">Apelido / Nome fantasia</div>
+                    <div class="col-md-9">{{ cliente.apelidoFantasia }}</div>
+                </div>
             {% endif %}
 
             {% if cliente.documento %}
-            <div class="row mb-2">
-                <div class="col-md-3 fw-bold">Documento</div>
-                <div class="col-md-9">{{ cliente.documento }}</div>
-            </div>
+                <div class="row mb-2">
+                    <div class="col-md-3 fw-bold">Documento</div>
+                    <div class="col-md-9">{{ cliente.documento }}</div>
+                </div>
             {% endif %}
 
             <hr>
@@ -64,24 +64,24 @@
             <h5 class="mb-3">Contato</h5>
 
             {% if cliente.email %}
-            <div class="row mb-2">
-                <div class="col-md-3 fw-bold">E-mail</div>
-                <div class="col-md-9">{{ cliente.email }}</div>
-            </div>
+                <div class="row mb-2">
+                    <div class="col-md-3 fw-bold">E-mail</div>
+                    <div class="col-md-9">{{ cliente.email }}</div>
+                </div>
             {% endif %}
 
             {% if cliente.telefonePrincipal %}
-            <div class="row mb-2">
-                <div class="col-md-3 fw-bold">Telefone principal</div>
-                <div class="col-md-9">{{ cliente.telefonePrincipal }}</div>
-            </div>
+                <div class="row mb-2">
+                    <div class="col-md-3 fw-bold">Telefone principal</div>
+                    <div class="col-md-9">{{ cliente.telefonePrincipal }}</div>
+                </div>
             {% endif %}
 
             {% if cliente.telefoneSecundario %}
-            <div class="row mb-2">
-                <div class="col-md-3 fw-bold">Telefone secundário</div>
-                <div class="col-md-9">{{ cliente.telefoneSecundario }}</div>
-            </div>
+                <div class="row mb-2">
+                    <div class="col-md-3 fw-bold">Telefone secundário</div>
+                    <div class="col-md-9">{{ cliente.telefoneSecundario }}</div>
+                </div>
             {% endif %}
 
             <hr>
@@ -110,52 +110,11 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="mb-0">Projetos do cliente</h5>
 
-                <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
-    <h3>Projetos do cliente</h3>
-
-    <a href="{{ path('app_cliente_projeto_new', { id: cliente.id }) }}"
-       class="btn btn-sm btn-success">
-        Novo projeto
-    </a>
-
-    <table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Título</th>
-            <th>Status</th>
-            <th>Início previsto</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for projeto in cliente.projetos %}
-            <tr>
-                <td>{{ projeto.titulo }}</td>
-                <td>{{ projeto.status }}</td>
-                <td>
-                    {{ projeto.dataInicioPrevista
-                        ? projeto.dataInicioPrevista|date('d/m/Y')
-                        : '-' }}
-                </td>
-                <td>
-                    <a href="{{ path('app_projeto_show', { id: projeto.id }) }}"
-                       class="btn btn-sm btn-outline-primary">
-                        Ver
-                    </a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4" class="text-muted">
-                    Nenhum projeto cadastrado
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-</div>
-
+                
+                <a href="{{ path('app_projeto_new', { cliente: cliente.id }) }}"
+   class="btn btn-sm btn-success">
+    Novo projeto
+</a>
 
             </div>
 
@@ -183,11 +142,15 @@
                                 </td>
 
                                 <td>
-                                    {{ projeto.dataInicioPrevista ? projeto.dataInicioPrevista|date('d/m/Y') : '—' }}
+                                    {{ projeto.dataInicioPrevista
+                                        ? projeto.dataInicioPrevista|date('d/m/Y')
+                                        : '—' }}
                                 </td>
 
                                 <td>
-                                    {{ projeto.dataFimPrevista ? projeto.dataFimPrevista|date('d/m/Y') : '—' }}
+                                    {{ projeto.dataFimPrevista
+                                        ? projeto.dataFimPrevista|date('d/m/Y')
+                                        : '—' }}
                                 </td>
 
                                 <td class="text-end">
@@ -216,7 +179,7 @@
     </div>
 
     {# ================= AÇÕES ================= #}
-    <div class="d-flex justify-content-end gap-2, btn-sm btn-outline-danger">
+    <div class="d-flex justify-content-end">
         {{ include('cliente/_delete_form.html.twig') }}
     </div>
 

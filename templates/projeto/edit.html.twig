@@ -21,21 +21,20 @@
             <h5 class="mb-3">Dados principais</h5>
 
             <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.cliente) }}
+                    {{ form_widget(form.cliente, { attr: { class: 'form-select' } }) }}
+                    {{ form_errors(form.cliente) }}
+                </div>
 
-             <div class="row">
-    <div class="col-md-6 mb-3">
-        {{ form_label(form.cliente) }}
-        {{ form_widget(form.cliente, { attr: { class: 'form-select' } }) }}
-        {{ form_errors(form.cliente) }}
-    </div>
-</div>
-
-                <div class="col-md-8 mb-3">
+                <div class="col-md-6 mb-3">
                     {{ form_label(form.titulo) }}
                     {{ form_widget(form.titulo, { attr: { class: 'form-control' } }) }}
                     {{ form_errors(form.titulo) }}
                 </div>
+            </div>
 
+            <div class="row">
                 <div class="col-md-4 mb-3">
                     {{ form_label(form.codigoInterno) }}
                     {{ form_widget(form.codigoInterno, { attr: { class: 'form-control' } }) }}
@@ -45,13 +44,13 @@
 
             <div class="mb-3">
                 {{ form_label(form.descricaoResumida) }}
-                {{ form_widget(form.descricaoResumida, { attr: { class: 'form-control' } }) }}
+                {{ form_widget(form.descricaoResumida, { attr: { class: 'form-control', rows: 2 } }) }}
                 {{ form_errors(form.descricaoResumida) }}
             </div>
 
             <div class="mb-3">
                 {{ form_label(form.descricaoDetalhada) }}
-                {{ form_widget(form.descricaoDetalhada, { attr: { class: 'form-control' } }) }}
+                {{ form_widget(form.descricaoDetalhada, { attr: { class: 'form-control', rows: 4 } }) }}
                 {{ form_errors(form.descricaoDetalhada) }}
             </div>
 
@@ -66,8 +65,6 @@
                     {{ form_widget(form.status, { attr: { class: 'form-select' } }) }}
                     {{ form_errors(form.status) }}
                 </div>
-
-                
 
                 <div class="col-md-4 mb-3">
                     {{ form_label(form.responsavelInterno, 'Responsável interno') }}
@@ -126,32 +123,33 @@
                 {{ form_errors(form.observacoes) }}
             </div>
 
+            {# TOKEN CSRF #}
+            {{ form_row(form._token) }}
+
             {# ===== AÇÕES ===== #}
             <div class="d-flex justify-content-between mt-4">
-                <a href="{{ path('app_projeto_index') }}"
-                   class="btn btn-outline-secondary">
+                <a href="{{ path('app_projeto_index') }}" class="btn btn-outline-secondary">
                     Voltar
                 </a>
 
-                <div class="d-flex gap-2">
-                    {% if projeto.status != 'cancelado' %}
-                        <form method="post"
-                              action="{{ path('app_projeto_cancelar', {'id': projeto.id}) }}"
-                              onsubmit="return confirm('Tem certeza que deseja cancelar este projeto?');">
-                            <button class="btn btn-outline-danger">
-                                Cancelar projeto
-                            </button>
-                        </form>
-                    {% endif %}
-
-                    <button class="btn btn-primary">
-                        Salvar alterações
-                    </button>
-                </div>
+                <button class="btn btn-primary">
+                    Salvar alterações
+                </button>
             </div>
 
             {{ form_end(form, { render_rest: false }) }}
 
+            {# ===== CANCELAR PROJETO (FORA DO FORM) ===== #}
+            {% if projeto.status != 'cancelado' %}
+                <form method="post"
+                      action="{{ path('app_projeto_cancelar', {'id': projeto.id}) }}"
+                      onsubmit="return confirm('Tem certeza que deseja cancelar este projeto?');"
+                      class="text-end mt-2">
+                    <button class="btn btn-outline-danger">
+                        Cancelar projeto
+                    </button>
+                </form>
+            {% endif %}
 
         </div>
     </div>

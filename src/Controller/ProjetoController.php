@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Projeto;
 use App\Form\ProjetoType;
+use App\Repository\ClienteRepository;
 use App\Repository\ProjetoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,9 +24,23 @@ class ProjetoController extends AbstractController
     }
 
     #[Route('/novo', name: 'app_projeto_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em): Response
-    {
+    public function new(
+        Request $request,
+        EntityManagerInterface $em,
+        ClienteRepository $clienteRepository
+    ): Response {
         $projeto = new Projeto();
+
+        // Se vier cliente por query (?cliente=1), apenas seta no objeto
+        $clienteId = $request->query->get('cliente');
+        if ($clienteId) {
+            $cliente = $clienteRepository->find($clienteId);
+            if ($cliente) {
+                $projeto->setCliente($cliente);
+            }
+        }
+
+        // ⚠️ SEM options extras
         $form = $this->createForm(ProjetoType::class, $projeto);
         $form->handleRequest($request);
 
@@ -37,6 +52,7 @@ class ProjetoController extends AbstractController
         }
 
         return $this->render('projeto/new.html.twig', [
+            'projeto' => $projeto,
             'form' => $form,
         ]);
     }
@@ -55,25 +71,22 @@ class ProjetoController extends AbstractController
         Projeto $projeto,
         EntityManagerInterface $em
     ): Response {
+        // ⚠️ SEM options extras
         $form = $this->createForm(ProjetoType::class, $projeto);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $projeto->setUpdatedAt(new \DateTimeImmutable());
             $em->flush();
 
-            return $this->redirectToRoute('app_projeto_show', [
-                'id' => $projeto->getId(),
-            ]);
+            return $this->redirectToRoute('app_projeto_index');
         }
 
         return $this->render('projeto/edit.html.twig', [
-            'form' => $form,
             'projeto' => $projeto,
+            'form' => $form,
         ]);
     }
 
-    
     #[Route('/{id}/cancelar', name: 'app_projeto_cancelar', methods: ['POST'])]
     public function cancelar(
         Projeto $projeto,
