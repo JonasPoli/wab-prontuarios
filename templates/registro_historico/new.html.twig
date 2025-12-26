@@ -3,14 +3,81 @@
 {% block title %}Novo registro histórico{% endblock %}
 
 {% block body %}
-    <h1>Novo registro histórico</h1>
+<div class="container-fluid py-4">
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button>Salvar</button>
-    {{ form_end(form) }}
+    {# ===== CABEÇALHO ===== #}
+    <div class="mb-4">
+        <h1 class="h3 mb-0">Novo registro histórico</h1>
+        <p class="text-muted mb-0">
+            Projeto: <strong>{{ projeto.titulo }}</strong>
+        </p>
+    </div>
 
-    <a href="{{ path('app_projeto_show', { id: projeto.id }) }}">
-        Voltar ao projeto
-    </a>
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            {# ===== DADOS DO REGISTRO ===== #}
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    {{ form_label(form.dataRegistro) }}
+                    {{ form_widget(form.dataRegistro, { attr: { class: 'form-control' } }) }}
+                    {{ form_errors(form.dataRegistro) }}
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    {{ form_label(form.tipoRegistro) }}
+                    {{ form_widget(form.tipoRegistro, { attr: { class: 'form-select' } }) }}
+                    {{ form_errors(form.tipoRegistro) }}
+                </div>
+
+                <div class="col-md-4 mb-3 d-flex align-items-end">
+                    <div class="form-check">
+                        {{ form_widget(form.visivelParaCliente, { attr: { class: 'form-check-input' } }) }}
+                        {{ form_label(form.visivelParaCliente, null, {
+                            label_attr: { class: 'form-check-label' }
+                        }) }}
+                        {{ form_errors(form.visivelParaCliente) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.titulo) }}
+                {{ form_widget(form.titulo, { attr: { class: 'form-control' } }) }}
+                {{ form_errors(form.titulo) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.descricao) }}
+                {{ form_widget(form.descricao, {
+                    attr: { class: 'form-control', rows: 4 }
+                }) }}
+                {{ form_errors(form.descricao) }}
+            </div>
+
+            {# TOKEN CSRF #}
+            {{ form_row(form._token) }}
+
+            {# ===== AÇÕES ===== #}
+            <div class="d-flex justify-content-between mt-4">
+                <a
+                    href="{{ path('app_projeto_show', { id: projeto.id }) }}"
+                    class="btn btn-outline-secondary"
+                >
+                    Cancelar
+                </a>
+
+                <button class="btn btn-primary">
+                    Salvar registro
+                </button>
+            </div>
+
+            {{ form_end(form, { render_rest: false }) }}
+
+        </div>
+    </div>
+
+</div>
 {% endblock %}

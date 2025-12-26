@@ -14,14 +14,25 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/cliente')]
 final class ClienteController extends AbstractController
 {
-    #[Route(name: 'app_cliente_index', methods: ['GET'])]
-    public function index(ClienteRepository $clienteRepository): Response
-    {
-        return $this->render('cliente/index.html.twig', [
-            'clientes' => $clienteRepository->findAtivos(),
+   #[Route('/', name: 'app_cliente_index', methods: ['GET'])]
+public function index(
+    Request $request,
+    ClienteRepository $clienteRepository
+): Response {
+    $q = $request->query->get('q');
 
-        ]);
+    if ($q) {
+        $clientes = $clienteRepository->search($q);
+    } else {
+        $clientes = $clienteRepository->findAll();
     }
+
+    return $this->render('cliente/index.html.twig', [
+        'clientes' => $clientes,
+    ]);
+}
+
+    
 
     #[Route('/new', name: 'app_cliente_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response

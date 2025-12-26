@@ -16,12 +16,23 @@ use Symfony\Component\Routing\Attribute\Route;
 class ProjetoController extends AbstractController
 {
     #[Route('/', name: 'app_projeto_index', methods: ['GET'])]
-    public function index(ProjetoRepository $projetoRepository): Response
-    {
-        return $this->render('projeto/index.html.twig', [
-            'projetos' => $projetoRepository->findAll(),
-        ]);
+public function index(
+    Request $request,
+    ProjetoRepository $projetoRepository
+): Response {
+    $q = $request->query->get('q');
+
+    if ($q) {
+        $projetos = $projetoRepository->search($q);
+    } else {
+        $projetos = $projetoRepository->findAll();
     }
+
+    return $this->render('projeto/index.html.twig', [
+        'projetos' => $projetos,
+    ]);
+}
+
 
     #[Route('/novo', name: 'app_projeto_new', methods: ['GET', 'POST'])]
     public function new(

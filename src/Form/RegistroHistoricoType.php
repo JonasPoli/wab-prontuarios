@@ -21,35 +21,35 @@ class RegistroHistoricoType extends AbstractType
                 'label' => 'Data do registro',
                 'widget' => 'single_text',
             ])
+
             ->add('tipoRegistro', ChoiceType::class, [
                 'label' => 'Tipo do registro',
-                'required' => false,
                 'choices' => [
-                    'Anotação' => 'anotacao',
-                    'Reunião' => 'reuniao',
-                    'Ligação' => 'ligacao',
-                    'E-mail' => 'email',
+                    'Anotação'  => 'anotacao',
+                    'Reunião'   => 'reuniao',
+                    'Ligação'   => 'ligacao',
+                    'E-mail'    => 'email',
                     'Documento' => 'documento',
                 ],
                 'placeholder' => 'Selecione o tipo',
+                'required' => true,
             ])
+
             ->add('titulo', TextType::class, [
                 'label' => 'Título',
                 'required' => false,
             ])
+
             ->add('descricao', TextareaType::class, [
                 'label' => 'Descrição',
+                'required' => true,
             ])
+
             ->add('visivelParaCliente', CheckboxType::class, [
                 'label' => 'Visível para o cliente',
                 'required' => false,
-            ])
-            ->add('tags', TextType::class, [
-                'label' => 'Tags',
-                'required' => false,
-                'help' => 'Separe por vírgula',
-            ])
-        ;
+                'help' => 'Marque se este registro pode ser visualizado pelo cliente',
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

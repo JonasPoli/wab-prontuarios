@@ -30,6 +30,7 @@
 
         <ul class="nav nav-pills flex-column mb-auto">
 
+            {# ===== CLIENTES ===== #}
             <li class="nav-item">
                 <a href="{{ path('app_cliente_index') }}"
                    class="nav-link
@@ -39,6 +40,32 @@
                        link-body-emphasis
                    {% endif %}">
                     Clientes
+                </a>
+            </li>
+
+            {# ===== PROJETOS ===== #}
+            <li class="nav-item">
+                <a href="{{ path('app_projeto_index') }}"
+                   class="nav-link
+                   {% if app.request.attributes.get('_route') starts with 'app_projeto' %}
+                       active
+                   {% else %}
+                       link-body-emphasis
+                   {% endif %}">
+                    Projetos
+                </a>
+            </li>
+
+            {# ===== HISTÓRICO / PRONTUÁRIOS ===== #}
+            <li class="nav-item">
+                <a href="{{ path('app_registro_historico_index') }}"
+                   class="nav-link
+                   {% if app.request.attributes.get('_route') starts with 'app_registro' %}
+                       active
+                   {% else %}
+                       link-body-emphasis
+                   {% endif %}">
+                    Histórico
                 </a>
             </li>
 

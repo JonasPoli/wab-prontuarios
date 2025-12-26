@@ -89,12 +89,15 @@
                     Voltar
                 </a>
 
-                <button class="btn btn-primary">
-                    Salvar projeto
-                </button>
-            </div>
+             <button class="btn btn-primary">
+    Salvar projeto
+</button>
 
-             {{ form_end(form) }}
+{{ form_widget(form._token) }}
+
+{{ form_end(form, { render_rest: false }) }}
+
+
 
         </div>
     </div>

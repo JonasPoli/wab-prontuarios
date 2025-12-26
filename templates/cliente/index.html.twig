@@ -4,13 +4,29 @@
 
 {% block body %}
 <div class="container-fluid py-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Clientes</h1>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0">Clientes</h1>
+    <div class="d-flex gap-2 align-items-center">
+        <form method="get" class="d-flex">
+            <input
+                type="text"
+                name="q"
+                value="{{ app.request.query.get('q') }}"
+                class="form-control form-control-sm"
+                style="width: 220px;"
+                placeholder="Pesquisar clientes"
+            >
+        </form>
 
-        <a href="{{ path('app_cliente_new') }}" class="btn btn-primary">
+        <a href="{{ path('app_cliente_new') }}" class="btn btn-sm btn-primary">
             + Novo cliente
         </a>
+    </div>
+</div>
+
+
+
     </div>
 
     <div class="card shadow-sm">

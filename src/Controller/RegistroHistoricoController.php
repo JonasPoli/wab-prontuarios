@@ -16,38 +16,39 @@ use Symfony\Component\Routing\Attribute\Route;
 class RegistroHistoricoController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(RegistroHistoricoRepository $registroHistoricoRepository): Response
+    public function index(RegistroHistoricoRepository $repository): Response
     {
         return $this->render('registro_historico/index.html.twig', [
-            'registros' => $registroHistoricoRepository->findAll(),
+            'registros' => $repository->findBy(
+                [],
+                ['dataRegistro' => 'DESC']
+            ),
         ]);
     }
 
-    #[Route('/new/{id}', name: 'new', methods: ['GET', 'POST'])]
+    #[Route('/projeto/{id}/novo', name: 'new', methods: ['GET', 'POST'])]
     public function new(
         Projeto $projeto,
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $em
     ): Response {
-        $registroHistorico = new RegistroHistorico();
-        $registroHistorico->setProjeto($projeto);
+        $registro = new RegistroHistorico();
+        $registro->setProjeto($projeto);
 
         if ($this->getUser()) {
-            $registroHistorico->setUsuarioAutor($this->getUser());
+            $registro->setUsuarioAutor($this->getUser());
         }
 
-        $form = $this->createForm(RegistroHistoricoType::class, $registroHistorico);
+        $form = $this->createForm(RegistroHistoricoType::class, $registro);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($registroHistorico);
-            $entityManager->flush();
+            $em->persist($registro);
+            $em->flush();
 
-            return $this->redirectToRoute(
-                'app_projeto_show',
-                ['id' => $projeto->getId()],
-                Response::HTTP_SEE_OTHER
-            );
+            return $this->redirectToRoute('app_projeto_show', [
+                'id' => $projeto->getId(),
+            ]);
         }
 
         return $this->render('registro_historico/new.html.twig', [

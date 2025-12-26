@@ -61,6 +61,8 @@ class RegistroHistorico
         return $this->id;
     }
 
+    
+
     public function getProjeto(): ?Projeto
     {
         return $this->projeto;

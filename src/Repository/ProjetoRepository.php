@@ -15,6 +15,18 @@ class ProjetoRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Projeto::class);
     }
+public function search(string $q): array
+{
+    return $this->createQueryBuilder('p')
+        ->leftJoin('p.cliente', 'c')
+        ->where('p.titulo LIKE :q')
+        ->orWhere('p.codigoInterno LIKE :q')
+        ->orWhere('c.nome LIKE :q')
+        ->setParameter('q', '%' . $q . '%')
+        ->orderBy('p.createdAt', 'DESC')
+        ->getQuery()
+        ->getResult();
+}
 
     //    /**
     //     * @return Projeto[] Returns an array of Projeto objects

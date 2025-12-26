@@ -25,6 +25,17 @@ class ClienteRepository extends ServiceEntityRepository
         ->getQuery()
         ->getResult();
 }
+public function search(string $q): array
+{
+    return $this->createQueryBuilder('c')
+        ->where('c.nome LIKE :q')
+        ->orWhere('c.apelidoFantasia LIKE :q')
+        ->orWhere('c.documento LIKE :q')
+        ->setParameter('q', '%' . $q . '%')
+        ->orderBy('c.nome', 'ASC')
+        ->getQuery()
+        ->getResult();
+}
 
     //    /**
     //     * @return Cliente[] Returns an array of Cliente objects
