@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RegistroHistoricoAnexo{% endblock %}
+
+{% block body %}
+    <h1>RegistroHistoricoAnexo</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ registro_historico_anexo.id }}</td>
+            </tr>
+            <tr>
+                <th>File</th>
+                <td>{{ registro_historico_anexo.file }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ registro_historico_anexo.title }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_registro_historico_anexo_index') }}">back to list</a>
+
+    <a href="{{ path('app_registro_historico_anexo_edit', {'id': registro_historico_anexo.id}) }}">edit</a>
+
+    {{ include('registro_historico_anexo/_delete_form.html.twig') }}
+{% endblock %}

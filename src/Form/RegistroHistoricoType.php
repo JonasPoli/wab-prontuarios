@@ -11,6 +11,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+
 
 class RegistroHistoricoType extends AbstractType
 {
@@ -50,6 +52,9 @@ class RegistroHistoricoType extends AbstractType
                 'required' => false,
                 'help' => 'Marque se este registro pode ser visualizado pelo cliente',
             ]);
+
+
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -50,8 +50,7 @@ public function index(
                 $projeto->setCliente($cliente);
             }
         }
-
-        // ⚠️ SEM options extras
+        
         $form = $this->createForm(ProjetoType::class, $projeto);
         $form->handleRequest($request);
 
@@ -82,7 +81,8 @@ public function index(
         Projeto $projeto,
         EntityManagerInterface $em
     ): Response {
-        // ⚠️ SEM options extras
+        
+        
         $form = $this->createForm(ProjetoType::class, $projeto);
         $form->handleRequest($request);
 

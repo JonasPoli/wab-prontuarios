@@ -16,7 +16,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
 
-            {{ form_start(form) }}
+            {{ form_start(form, { attr: { enctype: 'multipart/form-data' } }) }}
 
             {# ===== DADOS DO REGISTRO ===== #}
             <div class="row">
@@ -57,7 +57,9 @@
                 {{ form_errors(form.descricao) }}
             </div>
 
-            {# TOKEN CSRF #}
+
+
+            {# ===== TOKEN CSRF ===== #}
             {{ form_row(form._token) }}
 
             {# ===== AÇÕES ===== #}

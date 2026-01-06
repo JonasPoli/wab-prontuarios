@@ -32,6 +32,7 @@ class RegistroHistoricoController extends AbstractController
         Request $request,
         EntityManagerInterface $em
     ): Response {
+        
         $registro = new RegistroHistorico();
         $registro->setProjeto($projeto);
 
@@ -56,4 +57,10 @@ class RegistroHistoricoController extends AbstractController
             'projeto' => $projeto,
         ]);
     }
+
+    // criar uma rota para capturar o historico
+
+            // localizar todos os anexos do historico
+
+                // twig da lista de anexos
 }

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit RegistroHistoricoAnexo{% endblock %}
+
+{% block body %}
+    <h1>Edit RegistroHistoricoAnexo</h1>
+
+    {{ include('registro_historico_anexo/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_registro_historico_anexo_index') }}">back to list</a>
+
+    {{ include('registro_historico_anexo/_delete_form.html.twig') }}
+{% endblock %}

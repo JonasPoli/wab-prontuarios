@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RegistroHistoricoRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -50,10 +52,17 @@ class RegistroHistorico
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    /**
+     * @var Collection<int, RegistroHistoricoAnexo>
+     */
+    #[ORM\OneToMany(targetEntity: RegistroHistoricoAnexo::class, mappedBy: 'historicoAnexo')]
+    private Collection $registroHistoricoAnexos;
+
     public function __construct()
     {
         $this->dataRegistro = new \DateTime();
         $this->createdAt = new \DateTimeImmutable();
+        $this->registroHistoricoAnexos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -166,4 +175,39 @@ class RegistroHistorico
         $this->updatedAt = $updatedAt;
         return $this;
     }
+
+    /**
+     * @return Collection<int, RegistroHistoricoAnexo>
+     */
+    public function getRegistroHistoricoAnexos(): Collection
+    {
+        return $this->registroHistoricoAnexos;
+    }
+
+    public function addRegistroHistoricoAnexo(RegistroHistoricoAnexo $registroHistoricoAnexo): static
+    {
+        if (!$this->registroHistoricoAnexos->contains($registroHistoricoAnexo)) {
+            $this->registroHistoricoAnexos->add($registroHistoricoAnexo);
+            $registroHistoricoAnexo->setHistoricoAnexo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRegistroHistoricoAnexo(RegistroHistoricoAnexo $registroHistoricoAnexo): static
+    {
+        if ($this->registroHistoricoAnexos->removeElement($registroHistoricoAnexo)) {
+            // set the owning side to null (unless already changed)
+            if ($registroHistoricoAnexo->getHistoricoAnexo() === $this) {
+                $registroHistoricoAnexo->setHistoricoAnexo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    
+
+
+
 }

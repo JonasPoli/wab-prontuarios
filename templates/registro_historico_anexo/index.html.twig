@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RegistroHistoricoAnexo index{% endblock %}
+
+{% block body %}
+    <h1>RegistroHistoricoAnexo index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>File</th>
+                <th>Title</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for registro_historico_anexo in registro_historico_anexos %}
+            <tr>
+                <td>{{ registro_historico_anexo.id }}</td>
+                <td>{{ registro_historico_anexo.file }}</td>
+                <td>{{ registro_historico_anexo.title }}</td>
+                <td>
+                    <a href="{{ path('app_registro_historico_anexo_show', {'id': registro_historico_anexo.id}) }}">show</a>
+                    <a href="{{ path('app_registro_historico_anexo_edit', {'id': registro_historico_anexo.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_registro_historico_anexo_new') }}">Create new</a>
+{% endblock %}
