@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClientProjectRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class ClientProject
 {
     #[ORM\Id]
@@ -57,7 +58,7 @@ class ClientProject
 
     #[ORM\OneToMany(
         targetEntity: ClientProjectAttached::class,
-        mappedBy: 'projeto',
+        mappedBy: 'clientProject',
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
@@ -187,6 +188,19 @@ class ClientProject
         return $this;
     }
 
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
     /**
      * @return Collection<int, ClientProjectHistory>
      */
@@ -240,7 +254,7 @@ class ClientProject
     {
         if (!$this->clientProjectAttacheds->contains($clientProjectAttached)) {
             $this->clientProjectAttacheds->add($clientProjectAttached);
-            $clientProjectAttached->setProjeto($this);
+            $clientProjectAttached->setClientProject($this);
         }
 
         return $this;
@@ -249,8 +263,8 @@ class ClientProject
     public function removeClientProjectAttached(ClientProjectAttached $clientProjectAttached): static
     {
         if ($this->clientProjectAttacheds->removeElement($clientProjectAttached)) {
-            if ($clientProjectAttached->getProjeto() === $this) {
-                $clientProjectAttached->setProjeto(null);
+            if ($clientProjectAttached->getClientProject() === $this) {
+                $clientProjectAttached->setClientProject(null);
             }
         }
 

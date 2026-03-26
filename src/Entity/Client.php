@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\ClientStatus;
 use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -37,8 +38,8 @@ class Client
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $obs = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $status = null;
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $status = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logoFilename = null;
@@ -148,14 +149,26 @@ class Client
         return $this;
     }
 
-    public function getStatus(): ?int
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(?int $status): static
+    public function getStatusEnum(): ?ClientStatus
+    {
+        return $this->status !== null ? ClientStatus::from($this->status) : null;
+    }
+
+    public function setStatus(?string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function setStatusEnum(?ClientStatus $status): static
+    {
+        $this->status = $status?->value;
 
         return $this;
     }

@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\ClientProjectAttachedRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClientProjectAttachedRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class ClientProjectAttached
 {
     #[ORM\Id]
@@ -15,7 +17,7 @@ class ClientProjectAttached
 
     #[ORM\ManyToOne(inversedBy: 'clientProjectAttacheds')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?ClientProject $projeto = null;
+    private ?ClientProject $clientProject = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $file = null;
@@ -23,19 +25,22 @@ class ClientProjectAttached
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $createdAt = null;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getProjeto(): ?ClientProject
+    public function getClientProject(): ?ClientProject
     {
-        return $this->projeto;
+        return $this->clientProject;
     }
 
-    public function setProjeto(?ClientProject $projeto): static
+    public function setClientProject(?ClientProject $clientProject): static
     {
-        $this->projeto = $projeto;
+        $this->clientProject = $clientProject;
 
         return $this;
     }
@@ -62,5 +67,23 @@ class ClientProjectAttached
         $this->description = $description;
 
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
     }
 }
