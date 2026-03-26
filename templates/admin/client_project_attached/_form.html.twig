@@ -1,0 +1,48 @@
+{{ form_start(form) }}
+
+    <h5 class="mb-3">Dados do anexo</h5>
+
+    <div class="row g-3">
+        <div class="col-12 col-lg-6">
+            {# <label class="form-label">Projeto</label>
+            {{ form_widget(form.projeto, {'attr': {'class': 'form-select'}}) }}
+            {{ form_errors(form.projeto) }}
+        </div> #}
+
+        <div class="col-12 col-lg-12">
+            <label class="form-label">Descrição</label>
+            {{ form_widget(form.description, {
+                'attr': {
+                    'class': 'form-control',
+                    'placeholder': 'Digite uma descrição para o anexo'
+                }
+            }) }}
+            {{ form_errors(form.description) }}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <label class="form-label">Arquivos</label>
+        {{ form_widget(form.file, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+        {{ form_errors(form.file) }}
+        <div class="form-text">
+            Você pode selecionar um ou mais arquivos. Formatos aceitos: JPG, JPEG, PNG e PDF.
+        </div>
+    </div>
+
+    <div class="container-fluid py-4 px-0">
+        <div class="text-end">
+            <a href="{{ path('app_admin_client_project_attached_index') }}" class="btn btn-outline-secondary">
+                Voltar
+            </a>
+            <button class="btn btn-outline-primary ms-2">
+                {{ button_label|default('Salvar') }}
+            </button>
+        </div>
+    </div>
+
+{{ form_end(form) }}

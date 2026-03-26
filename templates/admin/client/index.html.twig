@@ -1,0 +1,102 @@
+{% extends 'admin/admin-template.html.twig' %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+
+  <h1>Cadastro de Clientes</h1>
+
+
+    <div class="text-end">
+
+      <a href="{{ path('app_admin_client_new') }}" 
+            class="btn btn-primary mb-2 d-inline-flex align-items-center gap-2" 
+            type="button">
+
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+            width="15"
+            height="15"
+            fill="currentColor"
+            aria-hidden="true"
+        >
+        
+            <path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/>
+        </svg>
+        Novo Cliente
+      </a>
+    
+    </div>
+</div>
+
+<table class="table border mb-0 display" id="myTable" >
+  <thead class="fw-semibold text-nowrap">
+    <tr class="align-middle">
+        <th class="bg-body-secondary">Nome</th>
+        <th class="bg-body-secondary text-center">Logo</th>
+        <th class="bg-body-secondary text-center">E-mail</th>
+        <th class="bg-body-secondary text-center">Telefone</th>
+        <th class="bg-body-secondary">Ações</th>
+    </tr>
+  </thead>
+    <tbody>
+     {% for client in clients %}
+        <tr class="align-middle">
+                          
+          <td>
+              <div class="text-nowrap">{{ client.name }}</div>
+              <div class="small text-body-secondary text-nowrap">{{ client.fantasyName }}</div>
+          </td>
+
+          <td>
+              {% if client.logoFilename %}
+                  <img src="{{ asset('uploads/logoFile/' ~ client.logoFilename) }}" 
+                  style="max-height:60px; max-width:100px; display:block; margin:auto;">
+              {% else %}
+                  <div class="text-body-secondary small text-center">Sem logo</div>
+              {% endif %}
+          </td>
+
+          <td class="text-center">
+             {{ client.mail }}
+          </td>
+
+          <td>
+            <div class="small text-body-secondary text-center">{{ client.phone1 }}</div>
+            <div class="fw-semibold text-nowrap text-center">{{ client.phone2 }}</div>
+            </td>
+
+            <td class="text-center">
+                                
+              <button type="button" class="btn btn-sm btn-outline-primary me-2"
+              onclick="location.href='{{ path('app_admin_client_show', {'id': client.id}) }}'">
+              Ver
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary"
+              onclick="location.href='{{ path('app_admin_client_edit', {'id': client.id}) }}'">
+              Editar
+              </button>                            
+            </td>                          
+                          
+          </tr>
+                        
+                        
+                {# {% else %}
+
+                  <tr>
+                      <td colspan="11">Nenhum registro encontrado</td>
+                  </tr> #}
+
+                {% endfor %}   
+                        
+                        
+      </tbody>
+    </table>
+  </div>
+
+
+    
+{% endblock %}

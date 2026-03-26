@@ -1,0 +1,74 @@
+{{ form_start(form) }}
+
+<div class="row g-3">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <label class="form-label">Data</label>
+        {{ form_widget(form.occurredAt, {'attr': {'class': 'form-control', 'aria-label': 'Data'}}) }}
+        {{ form_errors(form.occurredAt) }}
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-9 mb-4">
+        <label class="form-label">Projeto</label>
+        {{ form_widget(form.clientProject, {'attr': {'class': 'orm-control form-select select2'}}) }}
+        {{ form_errors(form.clientProject) }}
+    </div>
+</div>
+
+<div class="col-12 col-sm-6 col-lg-12 mb-4">
+    <label class="form-label">Resumo</label>
+    {{ form_widget(form.summary, {'attr': {'class': 'form-control', 'aria-label': 'Resumo'}}) }}
+    {{ form_errors(form.summary) }}
+</div>
+
+<div class="col-12 col-sm-6 col-lg-12 pb-4">
+    <label class="form-label">Transcrição</label>
+    {{ form_widget(form.transcript, {'attr': {'class': 'form-control', 'aria-label': 'Transcrição', 'style': 'height: 114px;'}}) }}
+    {{ form_errors(form.transcript) }}
+</div>
+{% if registro is defined and registro.audioFilename %}
+    <div class="mb-3">
+        <small class="text-muted">Áudio atual:</small><br>
+
+        <audio controls preload="metadata" style="width: 100%;">
+            <source src="{{ asset('uploads/mp3/' ~ registro.audioFilename) }}" type="audio/mpeg">
+            Seu navegador não suporta áudio.
+        </audio>
+
+        <small class="text-muted d-block mt-1">
+            Para trocar o áudio, selecione um novo arquivo abaixo.
+        </small>
+    </div>
+{% endif %}
+
+<div class="mb-3">
+    {{ form_label(form.audioFile) }}
+    {{ form_widget(form.audioFile, { attr: { class: 'form-control' } }) }}
+    {{ form_errors(form.audioFile) }}
+</div>
+
+<div class="container-fluid py-4">
+    <div class="text-end">
+        <a href="{{ path('app_admin_client_project_history_index') }}" class="btn btn-outline-secondary">
+            Voltar
+        </a>
+        <button class="btn btn-outline-primary ms-2 me-2">
+            {{ button_label|default('Salvar') }}
+        </button>
+    </div>
+</div>
+
+{{ form_rest(form) }}
+{{ form_end(form, {render_rest: false}) }}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    jQuery(document).ready(function ($) {
+        $('.select2').select2({
+            placeholder: 'Selecione um projeto',
+            width: '100%'
+        });
+    });
+</script>

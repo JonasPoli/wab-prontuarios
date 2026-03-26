@@ -1,0 +1,154 @@
+
+{% extends 'admin/admin-template.html.twig' %}
+
+{% block title %}Cliente{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ client.name }}</h1>
+            <p class="text-muted mb-0">Visualização dos dados do cliente</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_admin_client_index') }}" class="btn btn-outline-secondary">
+                Voltar
+            </a>
+
+            <a href="{{ path('app_admin_client_edit', {'id': client.id}) }}" class="btn btn-outline-primary">
+                Editar
+            </a>
+
+            {{ include('admin/client/_delete_form.html.twig') }}
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center gap-4 mb-4">
+                <div class="d-flex align-items-center justify-content-center" style="width: 90px; height: 90px; overflow: hidden;">
+                    {% if client.logoFilename %}
+                        <img
+                            src="{{ asset('uploads/logoFile/' ~ client.logoFilename) }}"
+                            alt="Logo de {{ client.name }}"
+                            class="img-fluid"
+                            style="max-width: 100%; max-height: 100%; object-fit: contain;"
+                        >
+                    {% else %}
+                        <span class="text-muted small">Sem logo</span>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <h5 class="mb-1">{{ client.name }}</h5>
+                    <div class="text-muted small">{{ client.fantasyName ?: 'Sem nome fantasia' }}</div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-12 col-md-6">
+                    <div class="small text-muted mb-1">Nome / Razão social</div>
+                    <div>{{ client.name ?: '-' }}</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="small text-muted mb-1">Apelido / Nome fantasia</div>
+                    <div>{{ client.fantasyName ?: '-' }}</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="small text-muted mb-1">Documento</div>
+                    <div>{{ client.document ?: '-' }}</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="small text-muted mb-1">Status</div>
+                    <div>{{ client.status ?: '-' }}</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="small text-muted mb-1">E-mail</div>
+                    <div>{{ client.mail ?: '-' }}</div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <div class="small text-muted mb-1">Telefone principal</div>
+                    <div>{{ client.phone1 ?: '-' }}</div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <div class="small text-muted mb-1">Telefone secundário</div>
+                    <div>{{ client.phone2 ?: '-' }}</div>
+                </div>
+
+                <div class="col-12">
+                    <div class="small text-muted mb-1">Observações</div>
+                    <div>{{ client.obs ?: '-' }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="mb-1">Projetos do cliente</h5>
+                    <p class="text-muted mb-0 small">Lista de projetos vinculados a este cliente</p>
+                </div>
+                <div class="text-muted small">
+                    {{ client.clientProjects|length }} projeto(s)
+                </div>
+            </div>
+
+            {% if client.clientProjects|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Descrição</th>
+                                <th>Início</th>
+                                <th>Fim</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for client_project in client.clientProjects %}
+                                <tr>
+                                    <td {{ client_project.title|length > 50 ? 'title="' ~ client_project.title ~ '"' : '' }}>
+                                        {{ client_project.title|length > 50 ? client_project.title|slice(0, 50) ~ '...' : client_project.title }}
+                                    </td>
+
+                                    <td {{ client_project.description|length > 50 ? 'title="' ~ client_project.description ~ '"' : '' }}>
+                                        {{ client_project.description|length > 50 ? client_project.description|slice(0, 50) ~ '...' : client_project.description }}
+                                    </td>
+
+                                    <td>
+                                        {{ client_project.dateStart ? client_project.dateStart|date('d/m/Y') : '-' }}
+                                    </td>
+
+                                    <td>
+                                        {{ client_project.dateEnd ? client_project.dateEnd|date('d/m/Y') : '-' }}
+                                    </td>
+
+                                    <td class="text-end">
+                                        <a href="{{ path('app_admin_client_project_show', {'id': client_project.id}) }}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            Ver
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-muted py-3">
+                    {{ client.name }} ainda não possui projetos cadastrados.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+

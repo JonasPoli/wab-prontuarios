@@ -16,23 +16,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-private ?string $nomeCompleto = null;
-
-public function getNomeCompleto(): string
-{
-    return $this->nome_completo ?? $this->email;
-}
-
-
-
-public function setNomeCompleto(string $nomeCompleto): static
-{
-    $this->nomeCompleto = $nomeCompleto;
-    return $this;
-}
-
-
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
@@ -121,11 +104,5 @@ public function setNomeCompleto(string $nomeCompleto): static
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
 
         return $data;
-    }
-
-    #[\Deprecated]
-    public function eraseCredentials(): void
-    {
-        // @deprecated, to be removed when upgrading to Symfony 8
     }
 }

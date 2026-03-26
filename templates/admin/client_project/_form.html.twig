@@ -1,0 +1,96 @@
+{{ form_start(form) }}
+
+<h5 class="mb-3">Dados principais</h5>
+
+    <div class="row g-3">
+        <div class="col-md-4 mb-4">
+        <label for="validationCustom01" class="form-label">Cliente</label>
+            {{ form_widget(form.client, {'attr': {'class': 'form-select'}}) }}
+            {{ form_errors(form.client) }}
+        </div>
+       
+        <div class="col">
+        <label for="validationCustom01" class="form-label">Título do projeto</label>
+        {{ form_widget(form.title, {'attr': {'class': 'form-control', 'aria-label': 'Título do projeto'}}) }}
+         {{ form_errors(form.title) }}
+        </div>
+    </div>
+
+        <div class="col-12 mb-4">
+        <label for="validationCustom01" class="form-label">Descrição resumida</label>
+         {{ form_widget(form.description, {'attr': {'class': 'form-control','aria-label': 'Descrição resumida', 'style': 'height: 74px;'}}) }}
+         {{ form_errors(form.description) }}
+        </div>
+
+        <div class="col-12">
+        <label for="validationCustom01" class="form-label">Descrição detalhada</label>
+         {{ form_widget(form.fullDescription, {'attr': {'class': 'form-control', 'aria-label': 'Descrição completa', 'style': 'height: 114px;'}}) }}
+         {{ form_errors(form.fullDescription) }}
+        </div>
+    
+    <hr>
+
+    <h5 class="mb-3">Controle do projeto</h5>
+
+    <hr>
+
+    <h5 class="mb-3">Planejamento</h5>
+        <div class="row g-3">
+            <div class="col-12 col-sm-6 col-lg-3">
+        <label for="validationCustom01" class="form-label">Início previsto</label>
+                {{ form_widget(form.dateStart, {'attr': {'class': 'form-control',  'aria-label': 'Data de início'}}) }}
+                {{ form_errors(form.dateStart) }}
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-3">
+        <label for="validationCustom01" class="form-label">Fim previsto</label>
+                {{ form_widget(form.dateEnd, {'attr': {'class': 'form-control', 'aria-label': 'Data de término'}}) }}
+                {{ form_errors(form.dateEnd) }}
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-3">
+        <label for="validationCustom01" class="form-label">Início real</label>
+                {{ form_widget(form.createdAt, {'attr': {'class': 'form-control', 'aria-label': 'Data de criação'}}) }}
+                {{ form_errors(form.createdAt) }}
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-3">
+        <label for="validationCustom01" class="form-label">Fim real</label>
+                {{ form_widget(form.updatedAt, {'attr': {'class': 'form-control', 'aria-label': 'Data de atualização'}}) }}
+                {{ form_errors(form.updatedAt) }}
+            </div>
+            </div>
+ 
+
+    <div class="col-12">
+
+    <div class="mb-4">
+   
+
+</div>
+
+    </div>
+
+    <hr>
+
+    <h5 class="mb-3">Observações</h5>
+
+        <div class="col-12">
+    
+         {{ form_widget(form.obs, {'attr': {'class': 'form-control','placeholder': 'Observações','aria-label': 'Observações', 'style': 'height: 114px;'}}) }}
+         {{ form_errors(form.obs) }}
+        </div>
+
+    <div class="container-fluid py-4">
+        <div class="text-end">
+            <a href="{{ path('app_admin_client_project_index') }}" class="btn btn-outline-secondary">
+                    Voltar
+            </a>
+            <button class="btn btn-outline-primary ms-2">
+                {{ button_label|default('Save') }}
+            </button>
+        </div>
+    </div>
+
+    {{ form_widget(form) }}
+{{ form_end(form) }}

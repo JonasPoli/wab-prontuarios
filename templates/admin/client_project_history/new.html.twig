@@ -1,0 +1,30 @@
+{% extends 'admin/admin-template.html.twig' %}
+
+{% block title %}Novo registro histórico{% endblock %}
+
+{% block content %}
+
+        <div class="mb-4">
+            <h1 class="h3 mb-0">
+            Novo registro histórico
+            </h1>
+            <p class="text-muted mb-0">
+                Preencha os dados abaixo para criar um novo registro histórico
+            </p>
+        </div>
+        <div class="card shadow-sm card-body">
+
+        {{ include('admin/client_project_history/_form.html.twig') }}
+            
+        </div>
+
+
+{% endblock %}
+
+
+
+
+
+
+
+

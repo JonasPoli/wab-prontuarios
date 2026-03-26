@@ -1,0 +1,87 @@
+{% extends 'admin/admin-template.html.twig' %}
+
+{% block title %}Novo Anexo{% endblock %}
+
+{% block content %}
+
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Adicionar anexo ao projeto</h1>
+        <p class="text-muted mb-0">
+            Selecione os arquivos e preencha as informações do anexo abaixo.
+        </p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-6">
+                    <div class="border rounded p-3 bg-body-tertiary h-100">
+                        <div class="small text-body-secondary mb-1">Projeto</div>
+                        <div class="fw-semibold">{{ clientProject.title }}</div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="border rounded p-3 bg-body-tertiary h-100">
+                        <div class="small text-body-secondary mb-1">Cliente</div>
+                        <div class="fw-semibold">{{ clientProject.client.name }}</div>
+                    </div>
+                </div>
+            </div>
+
+            {{ form_start(form) }}
+
+                <h5 class="mb-3">Dados do anexo</h5>
+
+                <div class="row g-3">
+                    {% if form.description is defined %}
+                        <div class="col-12">
+                            <label class="form-label">Descrição</label>
+                            {{ form_widget(form.description, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'placeholder': 'Digite uma descrição para o anexo',
+                                    'style': 'height: 90px;'
+                                }
+                            }) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+                    {% endif %}
+
+                    {% if form.file is defined %}
+                        <div class="col-12">
+                            <label class="form-label">Arquivos</label>
+                            {{ form_widget(form.file, {
+                                'attr': {
+                                    'class': 'form-control'
+                                }
+                            }) }}
+                            {{ form_errors(form.file) }}
+                            <div class="form-text">
+                                Você pode selecionar um ou mais arquivos. Formatos aceitos: JPG, JPEG, PNG e PDF.
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Renderiza campos restantes que não foram desenhados manualmente #}
+                {{ form_rest(form) }}
+
+                <div class="container-fluid py-4 px-0">
+                    <div class="text-end">
+                        <a href="{{ path('app_admin_client_project_index') }}" class="btn btn-outline-secondary">
+                            Voltar
+                        </a>
+                        <button class="btn btn-outline-primary ms-2">
+                            {{ button_label|default('Salvar') }}
+                        </button>
+                    </div>
+                </div>
+
+            {{ form_end(form) }}
+
+        </div>
+    </div>
+
+{% endblock %}

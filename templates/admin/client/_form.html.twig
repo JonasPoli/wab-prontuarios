@@ -1,0 +1,97 @@
+{{ form_start(form) }}
+
+    <h5 class="mb-3">Dados principais</h5>
+
+    <div class="row g-3 ">
+        <div class="col-md-4 mb-4">
+        <label for="validationCustom01" class="form-label">Tipo de cliente</label>
+            <select id="inputState" class="form-select">
+            <option>Pessoa Física</option>
+            <option>Pessoa Jurídica</option>
+            </select>
+        </div>
+        <div class="col">
+        <label for="validationCustom01" class="form-label">Nome / Razão Social</label>
+        {{ form_widget(form.name, {'attr': {'class': 'form-control','aria-label': 'Nome / Razão Social'}}) }}
+         {{ form_errors(form.name) }}
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6 mb-4">
+        <label for="validationCustom01" class="form-label">Apelido / Nome Fantasia</label>
+         {{ form_widget(form.fantasyName, {'attr': {'class': 'form-control', 'aria-label': ' Nome Fantasia / Apelido'}}) }}
+         {{ form_errors(form.fantasyName) }}
+        </div>
+
+        <div class="col-md-6">
+        <label for="validationCustom01" class="form-label">CPF / CNPJ</label>
+         {{ form_widget(form.document, {'attr': {'class': 'form-control','aria-label': 'CPF / CNPJ'}}) }}
+         {{ form_errors(form.document) }}
+        </div>
+    </div>
+
+    <hr>
+
+    <h5 class="mb-3">Contato</h5>
+    
+    <div class="row g-3">
+        <div class="col-sm-7">
+        <label for="validationCustom01" class="form-label">E-mail</label>
+         {{ form_widget(form.mail, {'attr': {'class': 'form-control','aria-label': 'E-mail'}}) }}
+         {{ form_errors(form.mail) }}
+        </div>
+        <div class="col-sm">
+        <label for="validationCustom01" class="form-label">Telefone principal</label>
+         {{ form_widget(form.phone1, {'attr': {'class': 'form-control','aria-label': 'Telefone principal'}}) }}
+         {{ form_errors(form.phone1) }}
+        </div>
+        <div class="col-sm">
+        <label for="validationCustom01" class="form-label">Telefone secundário</label>
+          {{ form_widget(form.phone2, {'attr': {'class': 'form-control','aria-label': 'Telefone secundário'}}) }}
+         {{ form_errors(form.phone2) }}
+        </div>
+    </div>
+
+
+    <hr>
+
+    <h5 class="mb-3">Logo</h5>
+
+    <div class="col-12">
+
+        {% if client.logoFilename %}
+            <div class="mb-2">
+                <img src="{{ asset('uploads/logoFile/' ~ client.logoFilename) }}" 
+                    alt="Logo atual"
+                    style="max-height:120px; max-width:200px;">
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.logoFilename, {'attr': {'class': 'form-control','aria-label': 'Logo'}}) }}
+        {{ form_errors(form.logoFilename) }}
+
+    </div>
+
+    <hr>
+
+    <h5 class="mb-3">Observações</h5>
+
+
+    <div class="col-12">
+         {{ form_widget(form.obs, {'attr': {'class': 'form-control','placeholder': 'Observações','aria-label': 'Observações', 'style': 'height: 114px;'}}) }}
+         {{ form_errors(form.obs) }}
+    </div>
+<div class="container-fluid py-4">
+    <div class="text-end">
+        <a href="{{ path('app_admin_client_index') }}" class="btn btn-outline-secondary">
+                Voltar
+        </a>
+        <button class="btn btn-outline-primary ms-2">
+            {{ button_label|default('Save') }}
+        </button>
+    </div>
+</div>
+    {{ form_widget(form) }}
+    
+{{ form_end(form) }}

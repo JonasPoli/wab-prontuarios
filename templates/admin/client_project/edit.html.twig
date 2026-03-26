@@ -1,0 +1,19 @@
+{% extends 'admin/admin-template.html.twig' %}
+
+{% block title %}Editar Projeto{% endblock %}
+
+{% block content %}
+    <div class="mb-4">
+        <h1 class="h3 mb-0">Editar projeto</h1>
+        <p class="text-muted mb-0">
+            Atualize os dados do projeto
+        </p>
+    </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+    {{ include('admin/client_project/_form.html.twig', {'button_label': 'Salvar'}) }}
+
+            </div>
+        </div>
+{% endblock %}

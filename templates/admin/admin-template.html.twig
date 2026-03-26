@@ -1,0 +1,167 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+    Administrador
+{% endblock %}
+
+{% block body %}
+    <div class="sidebar sidebar-light sidebar-fixed border-end" id="sidebar">
+        <div class="sidebar-header border-bottom">
+            <div class="sidebar-brand px-3 fw-semibold">
+                Meu Admin
+            </div>
+
+            {# Botão só aparece no mobile pra fechar overlay #}
+            <button class="btn-close d-lg-none" type="button" aria-label="Close" id="sidebarCloseBtn"></button>
+        </div>
+
+        <ul class="sidebar-nav" data-coreui="navigation" id="sidebarNav">
+            <li class="nav-item">
+                <a class="nav-link " href="{{ path('app_admin_dashboard') }}">
+                    <i class="nav-icon cil-speedometer"></i> Dashboard
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link " href="{{ path('app_admin_client_index') }}">
+                    <i class="nav-icon cil-people"></i> Clientes
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link " href="{{ path('app_admin_client_project_index') }}">
+                    <i class="nav-icon cil-address-book"></i> Projetos
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link " href="{{ path('app_admin_client_project_history_index') }}">
+                    <i class="nav-icon cil-history"></i> Histórico
+                </a>
+            </li>
+
+
+            
+            <li class="nav-item">
+                <a class="nav-link " href="{{ path('app_admin_client_project_attached_index') }}">
+                    <i class="nav-icon cil-file"></i> Anexos
+                </a>
+            </li>
+
+            <li class="nav-title">CADASTROS</li>
+
+            <li class="nav-group">
+                <a class="nav-link nav-group-toggle" href="#">
+                    <i class="nav-icon cil-puzzle"></i> Base
+                </a>
+                <ul class="nav-group-items">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <span class="nav-icon"><span class="nav-icon-bullet"></span></span>
+                            Itens
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <span class="nav-icon"><span class="nav-icon-bullet"></span></span>
+                            Categorias
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="nav-item mt-auto">
+                <a class="nav-link" href="#">
+                    <i class="nav-icon cil-account-logout"></i> Sair
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="wrapper d-flex flex-column min-vh-100">
+        <header class=" mb-4 border-bottom">
+            <div class="container-fluid px-4 d-flex align-items-center">
+                {# No desktop pode não fazer nada; no mobile ele abre/fecha overlay #}
+
+
+              
+            </div>
+        </header>
+
+        <main class="body flex-grow-1">
+            <div class="container-lg px-4">
+                <div class="card">
+                    <div class="card-body">
+                        {% block content %}
+                            <h4 class="mb-1">Dashboard</h4>
+                            <div class="text-body-secondary">
+                                Sidebar fixa no desktop, overlay no mobile, nav-group funcionando.
+                            </div>
+                        {% endblock %}
+
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer px-4 border-top bg-white mt-4 border-bottom">
+            <div class="ms-auto">Desenvolvido por Naná</div>
+        </footer>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarEl = document.getElementById('sidebar');
+            const navEl = document.getElementById('sidebarNav');
+
+            // garante instâncias (faz o nav-group funcionar sempre)
+            const sidebar = coreui.Sidebar.getOrCreateInstance(sidebarEl);
+            if (coreui.Navigation) coreui.Navigation.getOrCreateInstance(navEl);
+
+            // toggle só pro mobile (overlay)
+            document.getElementById('sidebarToggleBtn')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (window.matchMedia('(max-width: 991.98px)').matches) {
+                    sidebar.toggle();
+                }
+            });
+
+            // close no mobile
+            document.getElementById('sidebarCloseBtn')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                sidebar.hide();
+            });
+        });
+    </script>
+
+<!-- DataTables CSS e JS -->
+
+<link rel="stylesheet" href="{{ asset('assets/datatables/css/dataTables.bootstrap5.css') }}">
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{{ asset('assets/datatables/js/dataTables.js') }}"></script>
+<script src="{{ asset('assets/datatables/js/dataTables.bootstrap5.js') }}"></script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#myTable').DataTable({
+            pageLength: 100,
+            lengthMenu: [
+                [10, 100, 1000],
+                [10, 100, 1000]
+            ],
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json"
+            }
+        });
+    });
+</script>
+
+
+
+
+
+
+{% endblock %}

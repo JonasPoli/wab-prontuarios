@@ -1,3 +1,9 @@
-body {
-    background-color: skyblue;
+.btn.btn-outline-danger.btn-delete:hover,
+.btn.btn-outline-danger.btn-delete:focus,
+.btn.btn-outline-danger.btn-delete:active {
+  color: #fff !important;
+}
+
+.select2-container .select2-selection--single {
+    height: 38px !important;
 }

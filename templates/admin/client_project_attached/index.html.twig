@@ -1,0 +1,95 @@
+{% extends 'admin/admin-template.html.twig' %}
+
+{% block title %}Anexos{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Anexos</h1>
+
+    <a href="{{ path('app_admin_client_project_attached_new') }}"
+       class="btn btn-primary d-inline-flex align-items-center gap-2">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+            width="15"
+            height="15"
+            fill="currentColor"
+            aria-hidden="true">
+            <path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/>
+        </svg>
+        Novo Anexo
+    </a>
+</div>
+
+<table class="table border align-middle mb-0">
+    <thead class="fw-semibold text-nowrap">
+        <tr>
+            <th class="bg-body-secondary text-center" style="width: 90px;">Id</th>
+            <th class="bg-body-secondary text-center" style="width: 260px;">Arquivo</th>
+            <th class="bg-body-secondary text-center">Descrição</th>
+            <th class="bg-body-secondary text-center" style="width: 190px;">Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for client_project_attached in client_project_attacheds %}
+        <tr>
+            <td class="text-center">
+                {{ client_project_attached.id }}
+            </td>
+
+
+            <td class="text-center">
+                {% if client_project_attached.file %}
+                    <img
+                        src="{{ asset('uploads/attached/' ~ client_project_attached.file) }}"
+                        class="border rounded bg-white"
+                        style="max-height: 110px; max-width: 220px; width: auto; height: auto; object-fit: contain;"
+                        alt="Arquivo"
+                    >
+                {% else %}
+                    <div class="text-body-secondary small">Sem arquivo</div>
+                {% endif %}
+            </td>
+            <td class="text-center">
+                <div
+                    class="mx-auto text-truncate"
+                    style="max-width: 420px;"
+                    title="{{ client_project_attached.description }}"
+                >
+                    {% if client_project_attached.description %}
+                        {{ client_project_attached.description }}
+                    {% else %}
+                        <span class="text-body-secondary">Sem descrição</span>
+                    {% endif %}
+                </div>
+            </td>
+
+            <td class="text-center">
+                <div class="d-inline-flex align-items-center gap-2 flex-nowrap">
+                    <a href="{{ path('app_admin_client_project_attached_show', {'id': client_project_attached.id}) }}"
+                       class="btn btn-sm btn-outline-primary">
+                        Ver
+                    </a>
+
+                    <a href="{{ path('app_admin_client_project_attached_edit', {'id': client_project_attached.id}) }}"
+                       class="btn btn-sm btn-outline-secondary">
+                        Editar
+                    </a>
+                    {{ include('admin/client_project_attached/_delete_form.html.twig', {
+                        button_class: 'btn btn-sm btn-outline-danger'
+                    }) }}
+                    
+                </div>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="4" class="text-center">Nenhum registro encontrado</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
