@@ -11,6 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsCommand(
     name: 'app:create-admin',
@@ -19,7 +20,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class CreateAdminCommand extends Command
 {
 
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(private EntityManagerInterface $entityManager, private UserPasswordHasherInterface $passwordHasher)
     {
         parent::__construct();
     }
@@ -49,9 +50,16 @@ class CreateAdminCommand extends Command
         
 
         $user = new User();
+        $plaintextPassword = 'wab12345678';
+        $hashedPassword = $this->passwordHasher->hashPassword(
+            $user,
+            $plaintextPassword
+        );
+
         $user->setEmail('admin2@wab.com.br');
         $user->setRoles(['ROLE_ADMIN']);
-        $user->setPassword(password_hash('wab12345678', PASSWORD_BCRYPT));
+        $user->setPassword($hashedPassword);
+
     
 
         $this->entityManager->persist($user);
