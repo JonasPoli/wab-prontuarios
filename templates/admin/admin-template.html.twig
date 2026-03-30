@@ -110,58 +110,43 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const sidebarEl = document.getElementById('sidebar');
-            const navEl = document.getElementById('sidebarNav');
-
-            // garante instâncias (faz o nav-group funcionar sempre)
-            const sidebar = coreui.Sidebar.getOrCreateInstance(sidebarEl);
-            if (coreui.Navigation) coreui.Navigation.getOrCreateInstance(navEl);
-
-            // toggle só pro mobile (overlay)
-            document.getElementById('sidebarToggleBtn')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (window.matchMedia('(max-width: 991.98px)').matches) {
-                    sidebar.toggle();
-                }
-            });
-
-            // close no mobile
-            document.getElementById('sidebarCloseBtn')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                sidebar.hide();
-            });
-        });
-    </script>
 
 <!-- DataTables CSS e JS -->
 
-<link rel="stylesheet" href="{{ asset('assets/datatables/css/dataTables.bootstrap5.css') }}">
+<link rel="stylesheet" href="https://cdn.datatables.net/2.3.7/css/dataTables.dataTables.css">
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="{{ asset('assets/datatables/js/dataTables.js') }}"></script>
-<script src="{{ asset('assets/datatables/js/dataTables.bootstrap5.js') }}"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/2.3.7/css/dataTables.jqueryui.css">
+       
 
 
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/2.3.7/js/dataTables.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/2.3.7/js/dataTables.jqueryui.js"></script>
 <script>
-    $(document).ready(function () {
+
+    $(document).ready(function(){
         $('#myTable').DataTable({
-            pageLength: 100,
-            lengthMenu: [
-                [10, 100, 1000],
-                [10, 100, 1000]
-            ],
-            language: {
-                url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json"
-            }
-        });
+            "lengthMenu": [[-1,10, 25, 50], ["Todos", 10, 25, 50]],
+           "language": {
+                  "lengthMenu": "Mostrando _MENU_ registros por página",
+                  "zeroRecords": "Nada encontrado",
+                  "info": "Mostrando página _PAGE_ de _PAGES_",
+                  "infoEmpty": "Nenhum registro disponível",
+                  "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                   "search":" Pesquisar",
+
+                "paginate": {
+                      "first":      "Primeira",
+                      "last":       "Última",
+                      "next":       "Próxima",
+                      "previous":   "Anterior"
+                  },
+              }
+          });
     });
 </script>
 
-
-
-
-
-
+ 
 {% endblock %}
