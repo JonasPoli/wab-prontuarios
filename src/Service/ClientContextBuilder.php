@@ -16,6 +16,12 @@ class ClientContextBuilder
      * A estratégia aqui é enviar apenas os campos mais relevantes e
      * limitar o tamanho das transcrições para economizar tokens.
      */
+
+    public function __construct(
+        private string $projectDir
+    ) {
+    }
+
     public function build(Client $client): string
     {
         $lines = [];
