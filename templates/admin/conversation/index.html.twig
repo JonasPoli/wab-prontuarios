@@ -1,0 +1,52 @@
+{% extends 'admin/admin-template.html.twig' %}
+
+{% block title %}Conversas — {{ client.name }}{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="mb-0">Chat com IA</h1>
+        <div class="text-body-secondary small">Cliente: <strong>{{ client.name }}</strong></div>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ path('app_admin_client_show', {'id': client.id}) }}" class="btn btn-outline-secondary btn-sm">
+            ← Voltar ao Cliente
+        </a>
+        <form method="POST" action="{{ path('app_admin_conversation_new', {'clientId': client.id}) }}">
+            <button type="submit" class="btn btn-primary btn-sm">
+                + Nova Conversa
+            </button>
+        </form>
+    </div>
+</div>
+
+{% if conversations is empty %}
+    <div class="text-center py-5 text-body-secondary">
+        <div style="font-size:3rem;">💬</div>
+        <p class="mt-2">Nenhuma conversa ainda.<br>Clique em <strong>Nova Conversa</strong> para começar.</p>
+    </div>
+{% else %}
+    <div class="list-group">
+        {% for conversation in conversations %}
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <a href="{{ path('app_admin_conversation_show', {'clientId': client.id, 'id': conversation.id}) }}"
+                   class="text-decoration-none text-body flex-grow-1">
+                    <div class="fw-semibold">{{ conversation.title }}</div>
+                    <div class="small text-body-secondary">
+                        {{ conversation.messages|length }} mensagem(ns) ·
+                        {{ conversation.createdAt ? conversation.createdAt|date('d/m/Y H:i') : '' }}
+                    </div>
+                </a>
+                <form method="POST"
+                      action="{{ path('app_admin_conversation_delete', {'clientId': client.id, 'id': conversation.id}) }}"
+                      onsubmit="return confirm('Excluir esta conversa?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ conversation.id) }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger ms-3">Excluir</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% endblock %}

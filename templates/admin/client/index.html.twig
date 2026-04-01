@@ -78,7 +78,11 @@
               <button type="button" class="btn btn-sm btn-outline-secondary"
               onclick="location.href='{{ path('app_admin_client_edit', {'id': client.id}) }}'">
               Editar
-              </button>                            
+              </button>  
+            <button type="button" class="btn btn-sm btn-outline-success"
+            onclick="location.href='{{ path('app_admin_conversation_index', {'clientId': client.id}) }}'">
+            💬 Chat
+            </button>                        
             </td>                          
                           
           </tr>

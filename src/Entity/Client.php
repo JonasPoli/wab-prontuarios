@@ -52,13 +52,53 @@ class Client
     )]
     private Collection $clientProjects;
 
+    #[ORM\OneToMany(
+    targetEntity: Conversation::class,
+    mappedBy: 'client',
+    cascade: ['persist', 'remove'],
+    orphanRemoval: true
+    )]
+    private Collection $conversations;
+
+
+        
+    
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $type = null;
 
     public function __construct()
     {
         $this->clientProjects = new ArrayCollection();
+        $this->conversations = new ArrayCollection();
+
+       
     }
+
+     /** @return Collection<int, Conversation> */
+        public function getConversations(): Collection
+        {
+            return $this->conversations;
+        }
+
+        public function addConversation(Conversation $conversation): static
+        {
+            if (!$this->conversations->contains($conversation)) {
+                $this->conversations->add($conversation);
+                $conversation->setClient($this);
+            }
+            return $this;
+        }
+
+        public function removeConversation(Conversation $conversation): static
+        {
+            if ($this->conversations->removeElement($conversation)) {
+                if ($conversation->getClient() === $this) {
+                    $conversation->setClient(null);
+                }
+            }
+            return $this;
+        }
 
     public function getId(): ?int
     {
