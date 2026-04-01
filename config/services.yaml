@@ -21,10 +21,11 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-
+    App\Service\ClientContextBuilder:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
 
     App\Service\GptService:
         arguments:
             $apiKey: '%env(OPENAI_API_KEY)%'
             $model: '%env(OPENAI_MODEL)%'
-            $projectDir: '%kernel.project_dir%'
