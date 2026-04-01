@@ -20,6 +20,18 @@ class ClientContextBuilder
     {
         $lines = [];
 
+        // Adicionar a skill
+
+
+        $filePath = $this->getParameter('kernel.project_dir') . '/assets/skill/prontuario-cliente.md';
+
+        if (file_exists($filePath)) {
+            $conteudo = file_get_contents($filePath);
+        } else {
+            throw new \Exception('Arquivo não encontrado: ' . $filePath);
+        }
+        $lines[] = $conteudo;
+
         // Informações básicas do cliente
         $lines[] = "=== DADOS DO CLIENTE ===";
         $lines[] = "Nome: " . ($client->getName() ?? 'N/A');
