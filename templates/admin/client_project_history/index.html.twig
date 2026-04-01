@@ -3,81 +3,111 @@
 {% block title %}Registros históricos{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-2">
-    <h1>Registros históricos</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Registros históricos</h1>
+            <p class="text-muted mb-0">
+                Registros organizados por projeto
+            </p>
+        </div>
 
         <div class="text-end">
-
-        <a href="{{ path('app_admin_client_project_history_new') }}" 
-            class="btn btn-primary mb-2 d-inline-flex align-items-center gap-2" 
-            type="button">
-
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 640 640"
-            width="15"
-            height="15"
-            fill="currentColor"
-            aria-hidden="true"
-        >
-        
-            <path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/>
-        </svg>
-        Novo Registro
-        </a>
-
+            <a href="{{ path('app_admin_client_project_history_new') }}"
+               class="btn btn-primary d-inline-flex align-items-center gap-2"
+               type="button">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 640 640"
+                    width="15"
+                    height="15"
+                    fill="currentColor"
+                    aria-hidden="true"
+                >
+                    <path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/>
+                </svg>
+                Novo Registro
+            </a>
         </div>
-    
-</div>
+    </div>
 
-    <table id= "myTable" class="table border mb-0">
-        <thead class="fw-semibold text-nowrap">
-            <tr class="align-middle">
-                <th class="bg-body-secondary">Id</th>
-                <th class="bg-body-secondary text-start ">Data</th>
-                <th class="bg-body-secondary ">Resumo</th>
-                <th class="bg-body-secondary ">Transcrição</th>
-                <th class="bg-body-secondary text-center">Ações</th>
-            </tr>
-        </thead>
+    {% for group in grouped_histories %}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start flex-column flex-md-row gap-2 mb-3">
+                    <div>
+                        <h4 class="mb-1">
+                            {{ group.project ? group.project.title : 'Sem projeto vinculado' }}
+                        </h4>
 
+                        {% if group.project and group.project.client %}
+                            <div class="text-muted small">
+                                Cliente: {{ group.project.client.name }}
+                            </div>
+                        {% endif %}
+                    </div>
 
-        <tbody>
-        {% for client_project_history in client_project_histories %}
-            <tr>
-                <td>{{ client_project_history.id }}</td>
+                    <div class="text-muted small">
+                        {{ group.items|length }} registro(s)
+                    </div>
+                </div>
 
-                <td>{{ client_project_history.occurredAt ? client_project_history.occurredAt|date('Y-m-d H:i:s') : '' }}</td>
+                <table class="table border mb-0 align-middle">
+                    <thead class="fw-semibold text-nowrap">
+                        <tr class="align-middle">
+                            <th class="bg-body-secondary text-start">Data</th>
+                            <th class="bg-body-secondary">Resumo</th>
+                            <th class="bg-body-secondary">Transcrição</th>
+                            <th class="bg-body-secondary text-center">Ações</th>
+                        </tr>
+                    </thead>
 
-                <td {{ client_project_history.summary|length > 20 ? 'title="' ~ client_project_history.summary ~ '"' : '' }}>
-                    {{ client_project_history.summary|length > 20 ? client_project_history.summary|slice(0, 20) ~ '...' : client_project_history.summary }}
-                </td>
+                    <tbody>
+                        {% for client_project_history in group.items %}
+                            <tr>
+                                <td style="width: 120px;">
+                                    {{ client_project_history.occurredAt ? client_project_history.occurredAt|date('d/m/Y' ~ ' H:i') : '' }}
+                                </td>
 
-                <td {{ client_project_history.transcript|length > 20 ? 'title="' ~ client_project_history.transcript ~ '"' : '' }}>
-                    {{ client_project_history.transcript|length > 20 ? client_project_history.transcript|slice(0, 20) ~ '...' : client_project_history.transcript }}
-                </td>
+                                <td {{ client_project_history.summary|length > 60 ? 'title="' ~ client_project_history.summary ~ '"' : '' }}>
+                                    {{ client_project_history.summary|length > 60
+                                        ? client_project_history.summary|slice(0, 60) ~ '...'
+                                        : client_project_history.summary }}
+                                </td>
 
-                <td class="text-end">
-                                
-                    <button type="button" class="btn btn-sm btn-outline-primary me-2" 
-                    onclick="location.href='{{ path('app_admin_client_project_history_show', 
-                    {'id': client_project_history.id}) }}'">
-                        Ver
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary"
-                    onclick="location.href='{{ path('app_admin_client_project_history_edit', 
-                    {'id': client_project_history.id}) }}'">
-                       Editar
-                    </button>                            
-                </td>  
-            </tr>
-        {# {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr> #}
-        {% endfor %}
-        </tbody>
-    </table>
+                                <td {{ client_project_history.transcript|length > 60 ? 'title="' ~ client_project_history.transcript ~ '"' : '' }}>
+                                    {{ client_project_history.transcript|length > 60
+                                        ? client_project_history.transcript|slice(0, 60) ~ '...'
+                                        : client_project_history.transcript }}
+                                </td>
 
+                                <td class="text-end" style="width: 220px;">
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-info me-2"
+                                            onclick="location.href='{{ path('app_admin_client_project_history_attachment_add', {'id': client_project_history.id}) }}'">
+                                        + Anexo
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-primary me-2"
+                                            onclick="location.href='{{ path('app_admin_client_project_history_show', {'id': client_project_history.id}) }}'">
+                                        Ver
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            onclick="location.href='{{ path('app_admin_client_project_history_edit', {'id': client_project_history.id}) }}'">
+                                        Editar
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-light border">
+            Nenhum registro histórico encontrado.
+        </div>
+    {% endfor %}
 {% endblock %}
-

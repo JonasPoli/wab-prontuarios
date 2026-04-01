@@ -3,7 +3,10 @@
 namespace App\Controller\admin;
 
 use App\Entity\ClientProjectHistory;
+use App\Entity\ClientProjectHistoryAttached;
+use App\Form\ClientProjectHistoryAttachedType;
 use App\Form\ClientProjectHistoryType;
+use App\Repository\ClientProjectHistoryAttachedRepository;
 use App\Repository\ClientProjectHistoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,12 +22,40 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 final class ClientProjectHistoryController extends AbstractController
 {
     #[Route(name: 'app_admin_client_project_history_index', methods: ['GET'])]
-    public function index(ClientProjectHistoryRepository $clientProjectHistoryRepository): Response
-    {
-        return $this->render('admin/client_project_history/index.html.twig', [
-            'client_project_histories' => $clientProjectHistoryRepository->findAll(),
-        ]);
+public function index(ClientProjectHistoryRepository $clientProjectHistoryRepository): Response
+{
+    $histories = $clientProjectHistoryRepository->findBy([], [
+        'occurredAt' => 'DESC',
+        'id' => 'DESC',
+    ]);
+
+    $groupedHistories = [];
+
+    foreach ($histories as $history) {
+        $project = $history->getClientProject();
+
+        if (!$project) {
+            $groupedHistories['sem_projeto']['project'] = null;
+            $groupedHistories['sem_projeto']['items'][] = $history;
+            continue;
+        }
+
+        $key = (string) $project->getId();
+
+        if (!isset($groupedHistories[$key])) {
+            $groupedHistories[$key] = [
+                'project' => $project,
+                'items' => [],
+            ];
+        }
+
+        $groupedHistories[$key]['items'][] = $history;
     }
+
+    return $this->render('admin/client_project_history/index.html.twig', [
+        'grouped_histories' => $groupedHistories,
+    ]);
+}
 
     #[Route('/new', name: 'app_admin_client_project_history_new', methods: ['GET', 'POST'])]
     public function new(
@@ -32,8 +63,7 @@ final class ClientProjectHistoryController extends AbstractController
         EntityManagerInterface $entityManager,
         SluggerInterface $slugger,
         #[Autowire('%kernel.project_dir%/public/uploads/audioFile')] string $audioDirectory
-    ): Response
-    {
+    ): Response {
         $clientProjectHistory = new ClientProjectHistory();
         $form = $this->createForm(ClientProjectHistoryType::class, $clientProjectHistory);
         $form->handleRequest($request);
@@ -46,7 +76,6 @@ final class ClientProjectHistoryController extends AbstractController
                 $originalFilename = pathinfo($audioFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
                 $extension = $audioFile->guessExtension() ?: $audioFile->getClientOriginalExtension() ?: 'bin';
-
                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $extension;
 
                 try {
@@ -65,7 +94,7 @@ final class ClientProjectHistoryController extends AbstractController
 
         return $this->render('admin/client_project_history/new.html.twig', [
             'client_project_history' => $clientProjectHistory,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -84,8 +113,7 @@ final class ClientProjectHistoryController extends AbstractController
         EntityManagerInterface $entityManager,
         SluggerInterface $slugger,
         #[Autowire('%kernel.project_dir%/public/uploads/audioFile')] string $audioDirectory
-    ): Response
-    {
+    ): Response {
         $form = $this->createForm(ClientProjectHistoryType::class, $clientProjectHistory);
         $form->handleRequest($request);
 
@@ -99,16 +127,14 @@ final class ClientProjectHistoryController extends AbstractController
                 $originalFilename = pathinfo($audioFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
                 $extension = $audioFile->guessExtension() ?: $audioFile->getClientOriginalExtension() ?: 'bin';
-
                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $extension;
 
                 try {
                     $audioFile->move($audioDirectory, $newFilename);
 
                     if ($oldFilename) {
-                        $oldPath = rtrim($audioDirectory, '/') . '/' . $oldFilename;
+                        $oldPath = rtrim($audioDirectory, '/') . '/' . ltrim($oldFilename, '/');
 
-                        //apagar arquivo de áudio associado
                         if (is_file($oldPath)) {
                             unlink($oldPath);
                         }
@@ -127,7 +153,7 @@ final class ClientProjectHistoryController extends AbstractController
 
         return $this->render('admin/client_project_history/edit.html.twig', [
             'client_project_history' => $clientProjectHistory,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -136,19 +162,14 @@ final class ClientProjectHistoryController extends AbstractController
         Request $request,
         ClientProjectHistory $clientProjectHistory,
         EntityManagerInterface $entityManager,
-        #[Autowire('%kernel.project_dir%/public/uploads/audioFile')] string $audioDirectory
-    ): Response
-    {
-        if ($this->isCsrfTokenValid('delete' . $clientProjectHistory->getId(), $request->getPayload()->getString('_token'))) {
-            $audioFilename = $clientProjectHistory->getAudioFilename();
+        #[Autowire('%kernel.project_dir%/public/uploads/audioFile')] string $audioDirectory,
+        #[Autowire('%kernel.project_dir%/public/uploads/history_attached')] string $historyAttachedDirectory
+    ): Response {
+        if ($this->isCsrfTokenValid('delete' . $clientProjectHistory->getId(), $request->request->getString('_token'))) {
+            $this->removeFileIfExists($audioDirectory, $clientProjectHistory->getAudioFilename());
 
-            if ($audioFilename) {
-                $audioPath = rtrim($audioDirectory, '/') . '/' . $audioFilename;
-
-                //apagar arquivo de áudio associado
-                if (is_file($audioPath)) {
-                    unlink($audioPath);
-                }
+            foreach ($clientProjectHistory->getClientProjectHistoryAttacheds() as $attachment) {
+                $this->removeFileIfExists($historyAttachedDirectory, $attachment->getFile());
             }
 
             $entityManager->remove($clientProjectHistory);
@@ -156,5 +177,119 @@ final class ClientProjectHistoryController extends AbstractController
         }
 
         return $this->redirectToRoute('app_admin_client_project_history_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/attachment-new', name: 'app_admin_client_project_history_attachment_add', methods: ['GET', 'POST'])]
+    public function newAttachment(
+        ClientProjectHistory $clientProjectHistory,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SluggerInterface $slugger,
+        #[Autowire('%kernel.project_dir%/public/uploads/history_attached')] string $historyAttachedDirectory
+    ): Response {
+        $clientProjectHistoryAttached = new ClientProjectHistoryAttached();
+        $form = $this->createForm(ClientProjectHistoryAttachedType::class, $clientProjectHistoryAttached);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile[]|UploadedFile|null $attachedFiles */
+            $attachedFiles = $form->get('file')->getData();
+
+            if ($attachedFiles instanceof UploadedFile) {
+                $attachedFiles = [$attachedFiles];
+            }
+
+            if (!is_array($attachedFiles) || count($attachedFiles) === 0) {
+                $this->addFlash('warning', 'Nenhum arquivo foi enviado.');
+
+                return $this->render('admin/client_project_history/attachment_form.html.twig', [
+                    'clientProjectHistory' => $clientProjectHistory,
+                    'form' => $form->createView(),
+                ]);
+            }
+
+            foreach ($attachedFiles as $attachedFile) {
+                if (!$attachedFile instanceof UploadedFile) {
+                    continue;
+                }
+
+                $originalFilename = pathinfo($attachedFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $extension = $attachedFile->guessExtension() ?: $attachedFile->getClientOriginalExtension() ?: 'bin';
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $extension;
+
+                try {
+                    $attachedFile->move($historyAttachedDirectory, $newFilename);
+
+                    $newAttachment = new ClientProjectHistoryAttached();
+                    $newAttachment->setClientProjectHistory($clientProjectHistory);
+                    $newAttachment->setFile($newFilename);
+                    $newAttachment->setDescription($clientProjectHistoryAttached->getDescription());
+
+                    $entityManager->persist($newAttachment);
+                } catch (FileException $e) {
+                    $this->addFlash('danger', 'Não foi possível enviar o anexo: ' . $attachedFile->getClientOriginalName());
+                }
+            }
+
+            $entityManager->flush();
+
+            return $this->redirectToRoute(
+                'app_admin_client_project_history_show',
+                ['id' => $clientProjectHistory->getId()],
+                Response::HTTP_SEE_OTHER
+            );
+        }
+
+        return $this->render('admin/client_project_history/attachment_form.html.twig', [
+            'clientProjectHistory' => $clientProjectHistory,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{id}/attachment/{attachedId}/delete', name: 'app_admin_client_project_history_attachment_delete', methods: ['POST'])]
+    public function deleteAttachment(
+        ClientProjectHistory $clientProjectHistory,
+        int $attachedId,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ClientProjectHistoryAttachedRepository $clientProjectHistoryAttachedRepository,
+        #[Autowire('%kernel.project_dir%/public/uploads/history_attached')] string $historyAttachedDirectory
+    ): Response {
+        if (!$this->isCsrfTokenValid('delete_attachment_' . $attachedId, $request->request->getString('_token'))) {
+            return $this->redirectToRoute(
+                'app_admin_client_project_history_show',
+                ['id' => $clientProjectHistory->getId()],
+                Response::HTTP_SEE_OTHER
+            );
+        }
+
+        $attachment = $clientProjectHistoryAttachedRepository->find($attachedId);
+
+        if ($attachment && $attachment->getClientProjectHistory()?->getId() === $clientProjectHistory->getId()) {
+            $this->removeFileIfExists($historyAttachedDirectory, $attachment->getFile());
+
+            $entityManager->remove($attachment);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute(
+            'app_admin_client_project_history_show',
+            ['id' => $clientProjectHistory->getId()],
+            Response::HTTP_SEE_OTHER
+        );
+    }
+
+    private function removeFileIfExists(string $directory, ?string $filename): void
+    {
+        if (!$filename) {
+            return;
+        }
+
+        $path = rtrim($directory, '/') . '/' . ltrim($filename, '/');
+
+        if (is_file($path)) {
+            unlink($path);
+        }
     }
 }

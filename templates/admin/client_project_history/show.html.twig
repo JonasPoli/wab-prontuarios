@@ -1,14 +1,15 @@
 {% extends 'admin/admin-template.html.twig' %}
 
-{% block title %}ClientProjectHistory{% endblock %}
+{% block title %}Registro histórico{% endblock %}
 
 {% block content %}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">Registro histórico #{{ client_project_history.id }}</h1>
+            <p class="text-muted mb-0">Visualização do registro histórico do projeto</p>
+        </div>
 
-    <h1 class="h3 mb-0">{{ client_project_history.id }}</h1>
-            <p class="text-muted mb-0">
-                Visualização do registro histórico do projeto
-            </p>
-    <div class="d-flex justify-content-end gap-2 mb-3">
+        <div class="d-flex gap-2">
             <a href="{{ path('app_admin_client_project_history_index') }}" class="btn btn-outline-secondary">
                 Voltar
             </a>
@@ -16,46 +17,138 @@
             <a href="{{ path('app_admin_client_project_history_edit', {'id': client_project_history.id}) }}" class="btn btn-outline-primary">
                 Editar
             </a>
-                {{ include('admin/client_project_history/_delete_form.html.twig') }}
-        
+
+            {{ include('admin/client_project_history/_delete_form.html.twig') }}
+        </div>
     </div>
 
-    <div class="card shadow-sm card-body">
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="mb-3">Registro histórico</h5>
 
-    <table class="table">
-        <tbody>
-            <h5 class="mb-3">Registro Histórico</h5>
+            <div class="row g-4">
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ client_project_history.id }}</td>
-            </tr> 
-            <tr>
-                <td>
-                    {{ client_project_history.occurredAt ? client_project_history.occurredAt|date('Y-m-d H:i:s') : '' }}
-                </td>
-            </tr>
-            <tr>
-                <th>Resumo</th>
-                <td>{{ client_project_history.summary }}</td>
-            </tr>
-            <tr>
-                <th>Audio</th>
-                <td>
-                    {% if client_project_history.audioFilename %}
-                        <audio controls>
-                            <source src="{{ asset('uploads/audioFile/' ~ client_project_history.audioFilename) }}" type="audio/mpeg">
-                            Seu navegador não suporta o elemento de áudio.
-                        </audio>
+
+                <div class="col-md-6">
+                    <div class="small text-muted mb-1">Projeto</div>
+                    <div>
+                        {{ client_project_history.clientProject ? client_project_history.clientProject.title : '-' }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="small text-muted mb-1">Data da ocorrência</div>
+                    <div>
+                        {{ client_project_history.occurredAt ? client_project_history.occurredAt|date('d/m/Y H:i') : '-' }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="small text-muted mb-1">Criado em</div>
+                    <div>
+                        {{ client_project_history.createdAt ? client_project_history.createdAt|date('d/m/Y H:i') : '-' }}
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="small text-muted mb-1">Resumo</div>
+                    <div>{{ client_project_history.summary ?: '-' }}</div>
+                </div>
+
+                <div class="col-12">
+                    <div class="small text-muted mb-1">Transcrição</div>
+                    <div>{{ client_project_history.transcript ?: '-' }}</div>
+                </div>
+
+                <div class="col-12">
+                    <div class="small text-muted mb-1">Áudio</div>
+                    <div>
+                        {% if client_project_history.audioFilename %}
+                            <audio controls>
+                                <source src="{{ asset('uploads/audioFile/' ~ client_project_history.audioFilename) }}" type="audio/mpeg">
+                                Seu navegador não suporta o elemento de áudio.
+                            </audio>
+                        {% else %}
+                            <span class="text-muted">Nenhum arquivo de áudio disponível.</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+                <h5 class="mb-0">Anexos</h5>
+
+                <a href="{{ path('app_admin_client_project_history_attachment_add', {'id': client_project_history.id}) }}"
+                   class="btn btn-outline-primary btn-sm">
+                    Adicionar anexo
+                </a>
+            </div>
+
+            <table class="table border table-hover align-middle">
+                <thead class="fw-semibold text-nowrap">
+                    <tr class="align-middle">
+                        <th class="bg-body-secondary text-center">Arquivo</th>
+                        <th class="bg-body-secondary text-center">Descrição</th>
+                        <th class="bg-body-secondary text-center">Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for attached in client_project_history.clientProjectHistoryAttacheds %}
+                        <tr>
+
+                            <td class="text-center">
+                                {% if attached.file %}
+                                    {% set extension = attached.file|split('.')|last|lower %}
+
+                                    {% if extension in ['jpg', 'jpeg', 'png', 'webp'] %}
+                                        <img
+                                            src="{{ asset('uploads/history_attached/' ~ attached.file) }}"
+                                            class="img-fluid border rounded"
+                                            style="height:100px;width:auto;object-fit:contain;"
+                                        >
+                                    {% else %}
+                                        <a href="{{ asset('uploads/history_attached/' ~ attached.file) }}" target="_blank">
+                                            Ver arquivo
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="text-body-secondary small">Sem anexo</div>
+                                {% endif %}
+                            </td>
+
+                            <td class="text-center">
+                                {{ attached.description is not empty ? attached.description : 'Sem descrição' }}
+                            </td>
+
+                            <td class="text-center">
+                                <form method="post"
+                                      action="{{ path('app_admin_client_project_history_attachment_delete', {
+                                          id: client_project_history.id,
+                                          attachedId: attached.id
+                                      }) }}"
+                                      style="display:inline"
+                                      onsubmit="return confirm('Tem certeza que deseja remover este anexo?');">
+
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_attachment_' ~ attached.id) }}">
+
+                                    <button class="btn btn-outline-danger btn-sm">
+                                        Remover
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
                     {% else %}
-                        <p>Nenhum arquivo de áudio disponível.</p>
-                    {% endif %}
-                </td>
-            </tr>
-
-        </tbody>
-    </table>
-
+                        <tr>
+                            <td colspan="4" class="text-center text-muted small">
+                                Nenhum anexo encontrado
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}

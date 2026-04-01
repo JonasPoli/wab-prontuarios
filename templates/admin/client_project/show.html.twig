@@ -23,156 +23,190 @@
     </div>
 
     <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
+        <div class="card-body p-4">
 
-    <div class="d-flex align-items-center gap-4 mb-4">
-    <div style="width:90px;height:90px;overflow:hidden;" class="d-flex align-items-center justify-content-center">
+            <div class="d-flex align-items-center gap-4 mb-4">
+                <div style="width:90px;height:90px;overflow:hidden;" class="d-flex align-items-center justify-content-center">
+                    {% if client_project.client and client_project.client.logoFilename %}
+                        <img
+                            src="{{ asset('uploads/logoFile/' ~ client_project.client.logoFilename) }}"
+                            alt="Logo de {{ client_project.client.name }}"
+                            class="img-fluid"
+                            style="max-width:100%;max-height:100%;object-fit:contain;"
+                        >
+                    {% else %}
+                        <span class="text-muted small">Sem logo</span>
+                    {% endif %}
+                </div>
 
-    {% if client_project.client and client_project.client.logoFilename %}
-    <img
-    src="{{ asset('uploads/logoFile/' ~ client_project.client.logoFilename) }}"
-    alt="Logo de {{ client_project.client.name }}"
-    class="img-fluid"
-    style="max-width:100%;max-height:100%;object-fit:contain;"
-    >
-    {% else %}
-    <span class="text-muted small">Sem logo</span>
-    {% endif %}
+                <div>
+                    <h5 class="mb-1">{{ client_project.title ?: '-' }}</h5>
+                    <div class="text-muted small">
+                        {{ client_project.client ? client_project.client.name : 'Sem cliente vinculado' }}
+                    </div>
+                </div>
+            </div>
 
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="small text-muted mb-1">Título do projeto</div>
+                    <div>{{ client_project.title ?: '-' }}</div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="small text-muted mb-1">Cliente</div>
+                    <div>{{ client_project.client ? client_project.client.name : '-' }}</div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="small text-muted mb-1">Início previsto</div>
+                    <div>{{ client_project.dateStart ? client_project.dateStart|date('d/m/Y') : '-' }}</div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="small text-muted mb-1">Fim previsto</div>
+                    <div>{{ client_project.dateEnd ? client_project.dateEnd|date('d/m/Y') : '-' }}</div>
+                </div>
+
+                <div class="col-12">
+                    <div class="small text-muted mb-1">Descrição</div>
+                    <div>{{ client_project.description ?: '-' }}</div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row g-4 mt-4">
+                <div class="col-md-12">
+                    <h1 class="h3 mb-3">Anexos</h1>
+
+                    <table class="table border table-hover align-middle">
+                        <thead class="fw-semibold text-nowrap">
+                            <tr class="align-middle">
+                                <th class="bg-body-secondary text-center">Arquivo</th>
+                                <th class="bg-body-secondary text-center">Descrição</th>
+                                <th class="bg-body-secondary text-center">Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for attached in client_project.clientProjectAttacheds %}
+                                <tr>
+                                    <td class="text-center">
+                                        {% if attached.file %}
+                                            <img
+                                                src="{{ asset('uploads/attached/' ~ attached.file) }}"
+                                                class="img-fluid border rounded"
+                                                style="height:100px;width:auto;object-fit:contain;"
+                                            >
+                                        {% else %}
+                                            <div class="text-body-secondary small">Sem anexo</div>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="text-center">
+                                        {{ attached.description is not empty ? attached.description : 'Sem descrição' }}
+                                    </td>
+
+                                    <td class="text-center">
+                                        <form method="post"
+                                              action="{{ path('app_admin_client_project_attachment_delete', {
+                                                  id: attached.clientProject.id,
+                                                  attachedId: attached.id
+                                              }) }}"
+                                              style="display:inline"
+                                              onsubmit="return confirm('Tem certeza que deseja remover este anexo?');">
+
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_attachment_' ~ attached.id) }}">
+
+                                            <button class="btn btn-outline-danger btn-sm">
+                                                Remover
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted small">
+                                        Nenhum anexo encontrado
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row g-4 mt-4">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h1 class="h3 mb-0">Registros históricos</h1>
+
+                        <a href="{{ path('app_admin_client_project_history_new') }}" class="btn btn-outline-primary btn-sm">
+                            Novo registro histórico
+                        </a>
+                    </div>
+
+                    <table class="table border table-hover align-middle">
+                        <thead class="fw-semibold text-nowrap">
+                            <tr class="align-middle">
+                                <th class="bg-body-secondary">Data</th>
+                                <th class="bg-body-secondary">Resumo</th>
+                                <th class="bg-body-secondary text-center">Áudio</th>
+                                <th class="bg-body-secondary text-center">Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for history in client_project.clientProjectHistories %}
+                                <tr>
+                                    <td style="width: 140px;">
+                                        {{ history.occurredAt ? history.occurredAt|date('d/m/Y H:i') : '-' }}
+                                    </td>
+
+                                    <td>
+                                        <span title="{{ history.summary ?: '' }}">
+                                            {{ history.summary ? history.summary|u.truncate(90, '...') : 'Sem resumo' }}
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center" style="width: 260px;">
+                                        {% if history.audioFilename %}
+                                            <audio controls style="max-width: 220px;">
+                                                <source src="{{ asset('uploads/audioFile/' ~ history.audioFilename) }}" type="audio/mpeg">
+                                                Seu navegador não suporta o elemento de áudio.
+                                            </audio>
+                                        {% else %}
+                                            <span class="text-muted small">Sem áudio</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="text-center" style="width: 140px;">
+                                        <a href="{{ path('app_admin_client_project_history_show', {'id': history.id}) }}"
+                                           class="btn btn-outline-secondary btn-sm">
+                                            Ver
+                                        </a>
+
+                                        <a href="{{ path('app_admin_client_project_history_edit', {'id': history.id}) }}"
+                                           class="btn btn-outline-primary btn-sm">
+                                            Editar
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted small">
+                                        Nenhum registro histórico encontrado
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
     </div>
-
-    <div>
-    <h5 class="mb-1">{{ client_project.title ?: '-' }}</h5>
-    <div class="text-muted small">
-    {{ client_project.client ? client_project.client.name : 'Sem cliente vinculado' }}
-    </div>
-    </div>
-    </div>
-
-    <div class="row g-4">
-
-    <div class="col-md-6">
-    <div class="small text-muted mb-1">Título do projeto</div>
-    <div>{{ client_project.title ?: '-' }}</div>
-    </div>
-
-    <div class="col-md-6">
-    <div class="small text-muted mb-1">Cliente</div>
-    <div>{{ client_project.client ? client_project.client.name : '-' }}</div>
-    </div>
-
-    <div class="col-md-6">
-    <div class="small text-muted mb-1">Início previsto</div>
-    <div>
-    {{ client_project.dateStart ? client_project.dateStart|date('d/m/Y') : '-' }}
-    </div>
-    </div>
-
-    <div class="col-md-6">
-    <div class="small text-muted mb-1">Fim previsto</div>
-    <div>
-    {{ client_project.dateEnd ? client_project.dateEnd|date('d/m/Y') : '-' }}
-    </div>
-    </div>
-
-    <div class="col-12">
-    <div class="small text-muted mb-1">Descrição</div>
-    <div>{{ client_project.description}}</div>
-    </div>
-
-    </div>
-
-    <hr>
-
-    <div class="row g-4 mt-4">
-
-    <div class="col-md-12">
-
-    <h1 class="h3 mb-3">Anexos</h1>
-
-    <table class="table border table-hover align-middle">
-
-    <thead class="fw-semibold text-nowrap">
-    <tr class="align-middle">
-    <th class="bg-body-secondary">Contagem</th>
-    <th class="bg-body-secondary text-center">Arquivo</th>
-    <th class="bg-body-secondary text-center">Descrição</th>
-    <th class="bg-body-secondary text-center">Ações</th>
-    </tr>
-    </thead>
-
-    <tbody>
-
-    {% for attached in client_project.clientProjectAttacheds %}
-
-    <tr>
-
-    <td>Anexo {{ loop.index }}</td>
-
-    <td class="text-center">
-
-    {% if attached.file %}
-
-    <img
-    src="{{ asset('uploads/attached/' ~ attached.file) }}"
-    class="img-fluid border rounded"
-    style="height:100px;width:auto;object-fit:contain;"
-    >
-
-    {% else %}
-
-    <div class="text-body-secondary small">Sem anexo</div>
-
-    {% endif %}
-
-    </td>
-
-    <td class="text-center">
-    {{ attached.description is not empty ? attached.description : 'Sem descrição' }}
-    </td>
-    </td>
-
-    <td class="text-center">
-
-    <form method="post"
-    action="{{ path('app_admin_client_project_attachment_delete', {
-    id: attached.projeto.id,
-    attachedId: attached.id
-    }) }}"
-    style="display:inline"
-    onsubmit="return confirm('Tem certeza que deseja remover este anexo?');">
-
-    <input type="hidden" name="_token" value="{{ csrf_token('delete_attachment_' ~ attached.id) }}">
-
-    <button class="btn btn-outline-danger btn-sm">
-    Remover
-    </button>
-
-    </form>
-
-    </td>
-
-    </tr>
-
-    {% else %}
-
-    <tr>
-    <td colspan="4" class="text-center text-muted small">
-    Nenhum anexo encontrado
-    </td>
-    </tr>
-
-    {% endfor %}
-
-    </tbody>
-
-    </table>
-
-    </div>
-
-    </div>
-
-    </div>
-    </div>
-
-    {% endblock %}
+{% endblock %}
