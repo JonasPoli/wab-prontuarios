@@ -1,0 +1,61 @@
+{% extends 'admin/admin-template.html.twig' %}
+
+{% block title %}Novo anexo do histórico{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Adicionar anexo ao histórico</h1>
+            <p class="text-muted mb-0">
+                Projeto: {{ clientProjectHistory.clientProject ? clientProjectHistory.clientProject.title : '-' }}
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            {{ form_start(form) }}
+
+                <h5 class="mb-3">Dados do anexo</h5>
+
+                <div class="row g-3">
+                    <div class="col-12 col-lg-12">
+                        <label class="form-label">Descrição</label>
+                        {{ form_widget(form.description, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Digite uma descrição para o anexo'
+                            }
+                        }) }}
+                        {{ form_errors(form.description) }}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label class="form-label">Arquivos</label>
+                    {{ form_widget(form.file, {
+                        'attr': {
+                            'class': 'form-control'
+                        }
+                    }) }}
+                    {{ form_errors(form.file) }}
+                    <div class="form-text">
+                        Você pode selecionar um ou mais arquivos. Formatos aceitos: JPG, JPEG, PNG e PDF.
+                    </div>
+                </div>
+
+                <div class="container-fluid py-4 px-0">
+                    <div class="text-end">
+                        <a href="{{ path('app_admin_client_project_history_show', {'id': clientProjectHistory.id}) }}" class="btn btn-outline-secondary">
+                            Voltar
+                        </a>
+                        <button class="btn btn-outline-primary ms-2">
+                            {{ button_label|default('Salvar') }}
+                        </button>
+                    </div>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

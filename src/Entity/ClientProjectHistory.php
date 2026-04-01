@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ClientProjectHistoryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -33,6 +35,22 @@ class ClientProjectHistory
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $audioFilename = null;
+
+    /**
+     * @var Collection<int, ClientProjectHistoryAttached>
+     */
+    #[ORM\OneToMany(
+        targetEntity: ClientProjectHistoryAttached::class,
+        mappedBy: 'clientProjectHistory',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    private Collection $clientProjectHistoryAttacheds;
+
+    public function __construct()
+    {
+        $this->clientProjectHistoryAttacheds = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -115,5 +133,34 @@ class ClientProjectHistory
     public function onPrePersist(): void
     {
         $this->createdAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * @return Collection<int, ClientProjectHistoryAttached>
+     */
+    public function getClientProjectHistoryAttacheds(): Collection
+    {
+        return $this->clientProjectHistoryAttacheds;
+    }
+
+    public function addClientProjectHistoryAttached(ClientProjectHistoryAttached $clientProjectHistoryAttached): static
+    {
+        if (!$this->clientProjectHistoryAttacheds->contains($clientProjectHistoryAttached)) {
+            $this->clientProjectHistoryAttacheds->add($clientProjectHistoryAttached);
+            $clientProjectHistoryAttached->setClientProjectHistory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClientProjectHistoryAttached(ClientProjectHistoryAttached $clientProjectHistoryAttached): static
+    {
+        if ($this->clientProjectHistoryAttacheds->removeElement($clientProjectHistoryAttached)) {
+            if ($clientProjectHistoryAttached->getClientProjectHistory() === $this) {
+                $clientProjectHistoryAttached->setClientProjectHistory(null);
+            }
+        }
+
+        return $this;
     }
 }
