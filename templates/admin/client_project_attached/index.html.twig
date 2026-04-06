@@ -3,93 +3,214 @@
 {% block title %}Anexos{% endblock %}
 
 {% block content %}
+    <style>
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">Anexos</h1>
+        .page-subtitle {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
 
-    <a href="{{ path('app_admin_client_project_attached_new') }}"
-       class="btn btn-primary d-inline-flex align-items-center gap-2">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 640 640"
-            width="15"
-            height="15"
-            fill="currentColor"
-            aria-hidden="true">
-            <path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/>
-        </svg>
-        Novo Anexo
-    </a>
-</div>
+        .listing-card {
+            border: 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 0.35rem 1.2rem rgba(0, 0, 0, 0.06);
+        }
 
-<table class="table border align-middle mb-0">
-    <thead class="fw-semibold text-nowrap">
-        <tr>
-            <th class="bg-body-secondary text-center" style="width: 90px;">Id</th>
-            <th class="bg-body-secondary text-center" style="width: 260px;">Arquivo</th>
-            <th class="bg-body-secondary text-center">Descrição</th>
-            <th class="bg-body-secondary text-center" style="width: 190px;">Ações</th>
-        </tr>
-    </thead>
+        .listing-card .card-body {
+            padding: 1.5rem;
+        }
 
-    <tbody>
-    {% for client_project_attached in client_project_attacheds %}
-        <tr>
-            <td class="text-center">
-                {{ client_project_attached.id }}
-            </td>
+        .listing-table {
+            margin-bottom: 0;
+            vertical-align: middle;
+        }
 
+        .listing-table thead th {
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #6c757d;
+            background: #f8f9fa !important;
+            border-bottom: 1px solid #e9ecef;
+            white-space: nowrap;
+            padding-top: .95rem;
+            padding-bottom: .95rem;
+        }
 
-            <td class="text-center">
-                {% if client_project_attached.file %}
-                    <img
-                        src="{{ asset('uploads/attached/' ~ client_project_attached.file) }}"
-                        class="border rounded bg-white"
-                        style="max-height: 110px; max-width: 220px; width: auto; height: auto; object-fit: contain;"
-                        alt="Arquivo"
-                    >
-                {% else %}
-                    <div class="text-body-secondary small">Sem arquivo</div>
-                {% endif %}
-            </td>
-            <td class="text-center">
-                <div
-                    class="mx-auto text-truncate"
-                    style="max-width: 420px;"
-                    title="{{ client_project_attached.description }}"
-                >
-                    {% if client_project_attached.description %}
-                        {{ client_project_attached.description }}
+        .listing-table tbody td {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            border-color: #f1f3f5;
+        }
+
+        .file-preview-box {
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: .9rem;
+            padding: .75rem;
+        }
+
+        .file-preview-box img {
+            max-height: 110px;
+            max-width: 220px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: .5rem;
+            background: #fff;
+        }
+
+        .description-content {
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .description-title {
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #6c757d;
+            margin-bottom: .3rem;
+            font-weight: 700;
+        }
+
+        .description-text {
+            color: #212529;
+            line-height: 1.45;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .empty-muted {
+            color: #adb5bd;
+            font-style: italic;
+            font-size: .9rem;
+        }
+
+        .actions-cell {
+            min-width: 220px;
+        }
+
+        .actions-wrap {
+            display: flex;
+            gap: .5rem;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .actions-wrap .btn {
+            border-radius: .7rem;
+        }
+
+        .empty-row {
+            padding: 2rem 1rem !important;
+            color: #6c757d;
+        }
+    </style>
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 page-header">
+        <div>
+            <h1 class="mb-1">Anexos</h1>
+            <p class="page-subtitle">Arquivos vinculados aos projetos cadastrados</p>
+        </div>
+
+        <a href="{{ path('app_admin_client_project_attached_new') }}"
+           class="btn btn-primary d-inline-flex align-items-center gap-2 px-3 py-2">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 640 640"
+                width="15"
+                height="15"
+                fill="currentColor"
+                aria-hidden="true">
+                <path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/>
+            </svg>
+            Novo Anexo
+        </a>
+    </div>
+
+    <div class="card listing-card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table listing-table mb-0" id="myTable">
+                    <thead class="fw-semibold">
+                        <tr class="align-middle">
+                            <th class="text-center" style="width: 260px;">Arquivo</th>
+                            <th class="text-center">Descrição</th>
+                            <th class="text-center" style="width: 220px;">Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for client_project_attached in client_project_attacheds %}
+                        <tr class="align-middle">
+                            <td class="text-center">
+                                <div class="file-preview-box">
+                                    {% if client_project_attached.file %}
+                                        <img
+                                            src="{{ asset('uploads/attached/' ~ client_project_attached.file) }}"
+                                            alt="Arquivo"
+                                        >
+                                    {% else %}
+                                        <div class="empty-muted">Sem arquivo</div>
+                                    {% endif %}
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="description-content">
+                                    <div class="description-title">Descrição</div>
+
+                                    {% if client_project_attached.description %}
+                                        <div class="description-text"
+                                             title="{{ client_project_attached.description }}">
+                                            {{ client_project_attached.description }}
+                                        </div>
+                                    {% else %}
+                                        <div class="empty-muted">Sem descrição</div>
+                                    {% endif %}
+                                </div>
+                            </td>
+
+                            <td class="text-center actions-cell">
+                                <div class="actions-wrap">
+                                    <a href="{{ path('app_admin_client_project_attached_show', {'id': client_project_attached.id}) }}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Ver
+                                    </a>
+
+                                    <a href="{{ path('app_admin_client_project_attached_edit', {'id': client_project_attached.id}) }}"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        Editar
+                                    </a>
+
+                                    {{ include('admin/client_project_attached/_delete_form.html.twig', {
+                                        button_class: 'btn btn-sm btn-outline-danger'
+                                    }) }}
+                                </div>
+                            </td>
+                        </tr>
                     {% else %}
-                        <span class="text-body-secondary">Sem descrição</span>
-                    {% endif %}
-                </div>
-            </td>
-
-            <td class="text-center">
-                <div class="d-inline-flex align-items-center gap-2 flex-nowrap">
-                    <a href="{{ path('app_admin_client_project_attached_show', {'id': client_project_attached.id}) }}"
-                       class="btn btn-sm btn-outline-primary">
-                        Ver
-                    </a>
-
-                    <a href="{{ path('app_admin_client_project_attached_edit', {'id': client_project_attached.id}) }}"
-                       class="btn btn-sm btn-outline-secondary">
-                        Editar
-                    </a>
-                    {{ include('admin/client_project_attached/_delete_form.html.twig', {
-                        button_class: 'btn btn-sm btn-outline-danger'
-                    }) }}
-                    
-                </div>
-            </td>
-        </tr>
-    {% else %}
-        <tr>
-            <td colspan="4" class="text-center">Nenhum registro encontrado</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
-
+                        <tr>
+                            <td colspan="3" class="text-center empty-row">
+                                Nenhum registro encontrado
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}

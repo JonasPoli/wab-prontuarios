@@ -3,111 +3,243 @@
 {% block title %}Registros históricos{% endblock %}
 
 {% block content %}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <style>
+        .history-page-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .history-page-header .page-subtitle {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .history-main-card {
+            border: 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 0.35rem 1.2rem rgba(0, 0, 0, 0.06);
+        }
+
+        .history-table {
+            margin-bottom: 0;
+            vertical-align: middle;
+        }
+
+        .history-table thead th {
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #6c757d;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            white-space: nowrap;
+        }
+
+        .history-table tbody td {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            border-color: #f1f3f5;
+        }
+
+        .history-project {
+            min-width: 220px;
+        }
+
+        .history-project-title {
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: .2rem;
+        }
+
+        .history-project-client {
+            font-size: .85rem;
+            color: #6c757d;
+        }
+
+        {# .history-date-badge {
+            display: inline-flex;
+            flex-direction: column;
+            gap: .1rem;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: .75rem;
+            padding: .5rem .7rem;
+            line-height: 1.2;
+            min-width: 120px;
+        } #}
+
+        .history-date-badge strong {
+            font-size: .9rem;
+            color: #212529;
+        }
+
+        .history-date-badge span {
+            font-size: .78rem;
+            color: #6c757d;
+        }
+
+        .history-text-label {
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #6c757d;
+            margin-bottom: .25rem;
+            font-weight: 700;
+        }
+
+        .history-text-content {
+            color: #212529;
+            line-height: 1.45;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .history-empty-text {
+            color: #adb5bd;
+            font-style: italic;
+        }
+
+        .history-actions {
+            min-width: 210px;
+        }
+
+        .history-actions .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: end;
+            gap: .5rem;
+        }
+
+        .history-actions .btn {
+            border-radius: .7rem;
+        }
+
+        .history-empty {
+            border: 1px dashed #dee2e6;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            color: #6c757d;
+            background: #fff;
+        }
+    </style>
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 history-page-header">
         <div>
             <h1 class="mb-1">Registros históricos</h1>
-            <p class="text-muted mb-0">
-                Registros organizados por projeto
-            </p>
+            <p class="page-subtitle">Todos os registros em uma única tabela</p>
         </div>
 
-        <div class="text-end">
-            <a href="{{ path('app_admin_client_project_history_new') }}"
-               class="btn btn-primary d-inline-flex align-items-center gap-2"
-               type="button">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 640 640"
-                    width="15"
-                    height="15"
-                    fill="currentColor"
-                    aria-hidden="true"
-                >
-                    <path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/>
-                </svg>
-                Novo Registro
-            </a>
-        </div>
+        <a href="{{ path('app_admin_client_project_history_new') }}"
+           class="btn btn-primary d-inline-flex align-items-center gap-2 px-3 py-2">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 640 640"
+                 width="15"
+                 height="15"
+                 fill="currentColor"
+                 aria-hidden="true">
+                <path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/>
+            </svg>
+            Novo registro
+        </a>
     </div>
 
-    {% for group in grouped_histories %}
-        <div class="card border-0 shadow-sm mb-4">
+    {% if grouped_histories|length > 0 %}
+        <div class="card history-main-card">
             <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-start flex-column flex-md-row gap-2 mb-3">
-                    <div>
-                        <h4 class="mb-1">
-                            {{ group.project ? group.project.title : 'Sem projeto vinculado' }}
-                        </h4>
-
-                        {% if group.project and group.project.client %}
-                            <div class="text-muted small">
-                                Cliente: {{ group.project.client.name }}
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="text-muted small">
-                        {{ group.items|length }} registro(s)
-                    </div>
-                </div>
-
-                <table class="table border mb-0 align-middle">
-                    <thead class="fw-semibold text-nowrap">
-                        <tr class="align-middle">
-                            <th class="bg-body-secondary text-start">Data</th>
-                            <th class="bg-body-secondary">Resumo</th>
-                            <th class="bg-body-secondary">Transcrição</th>
-                            <th class="bg-body-secondary text-center">Ações</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for client_project_history in group.items %}
+                <div class="table-responsive">
+                    <table class="table history-table" id="myTable">
+                        <thead>
                             <tr>
-                                <td style="width: 120px;">
-                                    {{ client_project_history.occurredAt ? client_project_history.occurredAt|date('d/m/Y' ~ ' H:i') : '' }}
-                                </td>
-
-                                <td {{ client_project_history.summary|length > 60 ? 'title="' ~ client_project_history.summary ~ '"' : '' }}>
-                                    {{ client_project_history.summary|length > 60
-                                        ? client_project_history.summary|slice(0, 60) ~ '...'
-                                        : client_project_history.summary }}
-                                </td>
-
-                                <td {{ client_project_history.transcript|length > 60 ? 'title="' ~ client_project_history.transcript ~ '"' : '' }}>
-                                    {{ client_project_history.transcript|length > 60
-                                        ? client_project_history.transcript|slice(0, 60) ~ '...'
-                                        : client_project_history.transcript }}
-                                </td>
-
-                                <td class="text-end" style="width: 220px;">
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-info me-2"
-                                            onclick="location.href='{{ path('app_admin_client_project_history_attachment_add', {'id': client_project_history.id}) }}'">
-                                        + Anexo
-                                    </button>
-
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-primary me-2"
-                                            onclick="location.href='{{ path('app_admin_client_project_history_show', {'id': client_project_history.id}) }}'">
-                                        Ver
-                                    </button>
-
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-secondary"
-                                            onclick="location.href='{{ path('app_admin_client_project_history_edit', {'id': client_project_history.id}) }}'">
-                                        Editar
-                                    </button>
-                                </td>
+                                <th>Projeto</th>
+                                <th>Data</th>
+                                <th>Resumo</th>
+                                <th>Transcrição</th>
+                                <th class="text-end">Ações</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for group in grouped_histories %}
+                                {% for client_project_history in group.items %}
+                                    <tr>
+                                        <td class="history-project">
+                                            <div class="history-project-title">
+                                                {{ group.project ? group.project.title : 'Sem projeto vinculado' }}
+                                            </div>
+
+                                            <div class="history-project-client">
+                                                {% if group.project and group.project.client %}
+                                                    Cliente: {{ group.project.client.name }}
+                                                {% else %}
+                                                    Cliente não informado
+                                                {% endif %}
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            {% if client_project_history.occurredAt %}
+                                                <div class="history-date-badge">
+                                                    <strong>{{ client_project_history.occurredAt|date('d/m/Y') }}</strong>
+                                                    <span>{{ client_project_history.occurredAt|date('H:i') }}</span>
+                                                </div>
+                                            {% else %}
+                                                <span class="history-empty-text">Sem data</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <div class="history-text-label">Resumo</div>
+                                            {% if client_project_history.summary %}
+                                                <div class="history-text-content" title="{{ client_project_history.summary }}">
+                                                    {{ client_project_history.summary }}
+                                                </div>
+                                            {% else %}
+                                                <div class="history-empty-text">Sem resumo informado.</div>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <div class="history-text-label">Transcrição</div>
+                                            {% if client_project_history.transcript %}
+                                                <div class="history-text-content" title="{{ client_project_history.transcript }}">
+                                                    {{ client_project_history.transcript }}
+                                                </div>
+                                            {% else %}
+                                                <div class="history-empty-text">Sem transcrição informada.</div>
+                                            {% endif %}
+                                        </td>
+
+                                        <td class="text-end history-actions">
+                                            <div class="btn-group">
+                                                <a href="{{ path('app_admin_client_project_history_attachment_add', {'id': client_project_history.id}) }}"
+                                                   class="btn btn-sm btn-outline-info">
+                                                    + Anexo
+                                                </a>
+
+                                                <a href="{{ path('app_admin_client_project_history_show', {'id': client_project_history.id}) }}"
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    Ver
+                                                </a>
+
+                                                <a href="{{ path('app_admin_client_project_history_edit', {'id': client_project_history.id}) }}"
+                                                   class="btn btn-sm btn-outline-secondary">
+                                                    Editar
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     {% else %}
-        <div class="alert alert-light border">
+        <div class="history-empty">
             Nenhum registro histórico encontrado.
         </div>
-    {% endfor %}
+    {% endif %}
 {% endblock %}

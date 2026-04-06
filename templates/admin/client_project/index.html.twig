@@ -3,80 +3,202 @@
 {% block title %}Projetos{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-2">
+    <style>
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
 
-    <h1>Cadastro de Projetos</h1>
+        .page-subtitle {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
 
+        .listing-card {
+            border: 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 0.35rem 1.2rem rgba(0, 0, 0, 0.06);
+        }
 
-    <div class="text-end">
+        .listing-card .card-body {
+            padding: 1.5rem;
+        }
 
-        <a href="{{ path('app_admin_client_project_new') }}" 
-            class="btn btn-primary mb-2 d-inline-flex align-items-center gap-2" 
-            type="button">
+        .listing-table {
+            margin-bottom: 0;
+            vertical-align: middle;
+        }
 
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 640 640"
-            width="15"
-            height="15"
-            fill="currentColor"
-            aria-hidden="true"
-        >
-        
-            <path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/>
-        </svg>
-        Novo Projeto
-        </a>
-    
+        .listing-table thead th {
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #6c757d;
+            background: #f8f9fa !important;
+            border-bottom: 1px solid #e9ecef;
+            white-space: nowrap;
+            padding-top: .95rem;
+            padding-bottom: .95rem;
+        }
+
+        .listing-table tbody td {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            border-color: #f1f3f5;
+        }
+
+        .project-title {
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: .2rem;
+            line-height: 1.35;
+        }
+
+        .project-meta {
+            color: #6c757d;
+            font-size: .9rem;
+        }
+
+        .client-pill {
+            display: inline-block;
+            padding: .45rem .75rem;
+            {# background: #f8f9fa; #}
+            {# border: 1px solid #e9ecef; #}
+            {# border-radius: 999px; #}
+            font-size: .9rem;
+            {# color: #495057; #}
+        }
+
+        .date-box {
+            display: inline-flex;
+            flex-direction: column;
+            gap: .1rem;
+            {# background: #f8f9fa; #}
+            {# border: 1px solid #e9ecef; #}
+            border-radius: .75rem;
+            padding: .55rem .75rem;
+            line-height: 1.2;
+            min-width: 120px;
+        }
+
+        .date-box strong {
+            font-size: .9rem;
+            color: #212529;
+        }
+
+        .date-box span {
+            font-size: .78rem;
+            color: #6c757d;
+        }
+
+        .actions-cell {
+            min-width: 240px;
+        }
+
+        .actions-wrap {
+            display: flex;
+            gap: .5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .actions-wrap .btn {
+            border-radius: .7rem;
+        }
+    </style>
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 page-header">
+        <div>
+            <h1 class="mb-1">Projetos</h1>
+            <p class="page-subtitle">Cadastro e acompanhamento de projetos</p>
+        </div>
+
+        <div class="text-end">
+            <a href="{{ path('app_admin_client_project_new') }}"
+               class="btn btn-primary d-inline-flex align-items-center gap-2 px-3 py-2"
+               type="button">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 640 640"
+                    width="15"
+                    height="15"
+                    fill="currentColor"
+                    aria-hidden="true"
+                >
+                    <path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/>
+                </svg>
+                Novo Projeto
+            </a>
+        </div>
     </div>
-</div>
 
+    <div class="card listing-card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table listing-table" id="myTable">
+                    <thead class="fw-semibold">
+                        <tr class="align-middle">
+                            <th>Título</th>
+                            <th>Cliente</th>
+                            <th>Início previsto</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client_project in client_projects %}
+                            <tr class="align-middle">
+                                <td {{ client_project.title|length > 50 ? 'title="' ~ client_project.title ~ '"' : '' }}>
+                                    <div class="project-title">
+                                        {{ client_project.title|length > 50 ? client_project.title|slice(0, 50) ~ '...' : client_project.title }}
+                                    </div>
+                                    <div class="project-meta">
+                                        Anexos: {{ client_project.clientProjectAttacheds|length }}
+                                    </div>
+                                </td>
 
+                                <td>
+                                    <span class="client-pill">
+                                        {{ client_project.client.name }}
+                                    </span>
+                                </td>
 
-<table class="table border mb-0"  id="myTable">
-  <thead class="fw-semibold text-nowrap">
-            <tr class="align-middle">
-                <th class="bg-body-secondary">Título</th>
-                <th class="bg-body-secondary">Cliente</th>
-                {# <th>Status</th> #}
-                <th class="bg-body-secondary">Início previsto</th>
-                <th class="bg-body-secondary text-center">Ações</th>
-            </tr>
+                                <td>
+                                    {% if client_project.dateStart %}
+                                        <div class="date-box">
+                                            <strong>{{ client_project.dateStart|date('d/m/Y') }}</strong>
+                                            <span>Início previsto</span>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">Não informado</span>
+                                    {% endif %}
+                                </td>
 
-        </thead>
-        <tbody>
-        {% for client_project in client_projects %}
-            <tr>
-                <td {{ client_project.title|length > 50 ? 'title="' ~ client_project.title ~ '"' : '' }}>
-                    {{ client_project.title|length > 50 ? client_project.title|slice(0, 50) ~ '...' : client_project.title }}
-                    <br>
-                    <small class="text-muted">Anexos: {{ client_project.clientProjectAttacheds|length }}</small>
-                </td>
-                <td>{{ client_project.client.name }}</td>
-               
-                {# <td>{{ client_project.status }}</td> #}
-                <td>{{ client_project.dateStart ? client_project.dateStart|date('Y-m-d') : '' }}</td>
+                                <td class="text-center actions-cell">
+                                    <div class="actions-wrap">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-info"
+                                                onclick="location.href='{{ path('app_admin_client_project_attachment_add', {'id': client_project.id}) }}'">
+                                            + Anexo
+                                        </button>
 
-                    <td class="text-end">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-primary"
+                                                onclick="location.href='{{ path('app_admin_client_project_show', {'id': client_project.id}) }}'">
+                                            Ver
+                                        </button>
 
-                                
-                        <button type="button" class="btn btn-sm btn-outline-info me-2" onclick="location.href='{{ path('app_admin_client_project_attachment_add', {'id': client_project.id})}}'">
-                                + Anexo
-                        </button>
-                                
-                        <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="location.href='{{ path('app_admin_client_project_show', {'id': client_project.id}) }}'">
-                                Ver
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary"onclick="location.href='{{ path('app_admin_client_project_edit', {'id': client_project.id}) }}'">
-                                Editar
-                        </button>                            
-                    </td>  
-            </tr>
-        {# {% else %}
-            <tr>
-                <td colspan="10">Nenhum registro encontrado</td>
-            </tr> #}
-        {% endfor %}
-        </tbody>
-    </table>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-secondary"
+                                                onclick="location.href='{{ path('app_admin_client_project_edit', {'id': client_project.id}) }}'">
+                                            Editar
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}
