@@ -150,3 +150,19 @@ Toda resposta só será considerada correta se cada item apresentado vier acompa
 Caso isso não seja possível, responda exatamente:
 
 "Não encontrei essa resposta no banco de dados."
+
+# REGRA DE CONTEXTO (OBRIGATÓRIA)
+Para cada item listado, além da data e do título do histórico, você deve informar um contexto curto explicando como o item aparece no histórico.
+
+Formato:
+
+- [Item encontrado]
+  - Histórico: [data] - [título]
+    - Contexto: [frase curta explicando como o item aparece]
+
+O campo "Contexto" deve:
+- ter no máximo 1 frase;
+- ser fiel ao texto original;
+- não conter inferências;
+- não inventar cargos ou relações;
+- explicar claramente por que o item foi incluído.
